@@ -1,0 +1,1593 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1">
+<meta name="theme-color" content="#1d4ed8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Alicja">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>Alicja Trening</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f5f2ed;--sf:#fff;--sf2:#f0ede8;--bd:#e2ddd6;
+  --tx:#1a1714;--tx2:#6b6560;--tx3:#a09890;
+  --bl:#1d4ed8;--bl-l:#eff6ff;--bl-m:#bfdbfe;
+  --am:#92400e;--am-l:#fef3c7;
+  --ro:#9f1239;--ro-l:#fce7f3;
+  --gr:#166534;--gr-l:#dcfce7;
+  --pu:#6d28d9;--pu-l:#ede9fe;
+  --or:#c2410c;--or-l:#fff7ed;
+  --r:12px;--rl:18px;
+  --sab:env(safe-area-inset-bottom,0px);
+  --sat:env(safe-area-inset-top,0px);
+}
+body.dark{
+  --bg:#0f1117;--sf:#1a1d27;--sf2:#22263a;--bd:#2e3348;
+  --tx:#e8eaf6;--tx2:#9fa8c4;--tx3:#5c6380;
+  --bl:#6c8ff7;--bl-l:#1a2240;--bl-m:#2e4080;
+  --am-l:#2a1f00;--ro-l:#2a0a14;--gr-l:#0a1f0e;--pu-l:#1a1030;--or-l:#1f1000;
+}
+/* ── DARK MODE TOGGLE ── */
+.dm-btn{width:38px;height:38px;border-radius:50%;border:1px solid var(--bd);background:var(--sf2);cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .2s}
+/* ── TIMER OVERLAY ── */
+#timerOverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:300;align-items:center;justify-content:center;flex-direction:column;gap:16px;backdrop-filter:blur(6px)}
+#timerOverlay.on{display:flex}
+#timerRing{width:200px;height:200px;position:relative}
+#timerRing svg{transform:rotate(-90deg)}
+#timerRing circle.bg{fill:none;stroke:var(--bd);stroke-width:8}
+#timerRing circle.fg{fill:none;stroke:var(--bl);stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset .9s linear}
+#timerNum{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',serif;font-size:52px;color:#fff}
+#timerLabel{color:#fff;font-size:13px;opacity:.7;letter-spacing:.06em;text-transform:uppercase}
+#timerBtns{display:flex;gap:12px}
+.t-btn{padding:10px 24px;border-radius:var(--r);border:none;font-size:14px;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer}
+.t-btn-stop{background:#fff;color:#111}
+.t-btn-add{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3)}
+/* ── TIMER BADGE on set row ── */
+.tmr-btn{background:none;border:none;cursor:pointer;font-size:18px;padding:0 4px;line-height:1;opacity:.5;transition:opacity .15s;flex-shrink:0}
+.tmr-btn:active,.tmr-btn:hover{opacity:1}
+/* ── LONG PRESS HINT ── */
+.lp-hint{font-size:10px;color:var(--tx3);margin-top:2px;font-style:italic}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased;overscroll-behavior:none}
+/* ── HEADER ── */
+.hd{background:var(--sf);border-bottom:1px solid var(--bd);padding-left:1.5rem;padding-right:1.5rem;padding-bottom:0;padding-top:env(safe-area-inset-top);display:flex;align-items:stretch;gap:1.5rem;position:sticky;top:0;z-index:50;min-height:calc(56px + env(safe-area-inset-top))}
+.logo{font-family:'DM Serif Display',serif;font-size:22px;color:var(--bl);white-space:nowrap;padding-bottom:10px;margin-top:auto}
+.logo s{color:var(--tx3);font-size:13px;font-family:'DM Sans',sans-serif;font-weight:400;margin-left:6px;text-decoration:none;display:inline}
+nav{display:flex;flex:1;align-items:flex-end;padding-bottom:2px}
+.nb{padding:0 1.2rem;height:40px;margin-top:auto;border:none;background:transparent;cursor:pointer;font-size:13px;font-family:'DM Sans',sans-serif;font-weight:500;color:var(--tx2);border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}
+.nb:hover{color:var(--tx)}
+.nb.on{color:var(--bl);border-bottom-color:var(--bl)}
+.hs{margin-left:auto;display:flex;gap:1.25rem;align-items:center;padding-bottom:8px;margin-top:auto}
+.hv{font-size:18px;font-weight:600;color:var(--bl)}
+.hl{font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.04em}
+/* ── MAIN ── */
+.main{max-width:1400px;margin:0 auto;padding:1.5rem}
+.sec{display:none}.sec.on{display:block}
+/* ── ATLAS CARDS (rezerwa stylowa) ── */
+.eg{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px}
+.ec{background:var(--sf);border:1px solid var(--bd);border-radius:var(--rl);padding:1.125rem;cursor:pointer;transition:border-color .15s;-webkit-user-select:none;user-select:none}
+.ec:active{background:var(--sf2)}
+@media(hover:hover){.ec:hover{border-color:var(--bl-m)}}
+.badge{display:inline-block;font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;letter-spacing:.03em;text-transform:uppercase}
+.bp{background:var(--am-l);color:var(--am)}.bu{background:var(--bl-l);color:var(--bl)}.bc{background:var(--gr-l);color:var(--gr)}.bd{background:var(--pu-l);color:var(--pu)}
+.badge-opt{display:inline-block;font-size:10px;font-weight:700;padding:2px 9px;border-radius:999px;letter-spacing:.04em;text-transform:uppercase;background:var(--or-l);color:var(--or);margin-left:6px;vertical-align:middle}
+.en{font-family:'DM Serif Display',serif;font-size:15px;line-height:1.3;margin:8px 0 10px}
+.ep{display:flex;gap:5px;flex-wrap:wrap}
+.ep span{font-size:12px;padding:3px 9px;background:var(--sf2);border-radius:999px;color:var(--tx2)}
+.ep strong{color:var(--tx);font-weight:600}
+.em{font-size:11px;color:var(--tx3);margin-top:7px;font-style:italic}
+.pf{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:500;padding:2px 7px;border-radius:999px;white-space:nowrap}
+.pf.l{background:var(--am-l);color:var(--am)}.pf.z{background:var(--ro-l);color:var(--ro)}
+/* ── MODAL ── */
+.mb{display:none;position:fixed;inset:0;background:rgba(26,23,20,.55);z-index:200;align-items:flex-end;justify-content:center;backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
+.mb.on{display:flex}
+.md{background:var(--sf);border-radius:var(--rl) var(--rl) 0 0;width:100%;max-width:700px;max-height:92vh;overflow-y:auto;-webkit-overflow-scrolling:touch;position:relative;padding:1.25rem 1.25rem calc(1.5rem + var(--sab));padding-top:max(1.25rem, env(safe-area-inset-top))}
+.md::before{content:'';display:block;width:40px;height:4px;background:var(--bd);border-radius:2px;margin:0 auto 1rem}
+.mc{position:absolute;top:calc(max(1.25rem, env(safe-area-inset-top)) + 0.25rem);right:1.25rem;width:34px;height:34px;border:1px solid var(--bd);border-radius:50%;background:var(--sf2);cursor:pointer;font-size:20px;line-height:34px;text-align:center;color:var(--tx2);z-index:10}
+.md h2{font-family:'DM Serif Display',serif;font-size:20px;margin:6px 0 3px;padding-right:2.5rem;line-height:1.3}
+.mmt{font-size:12px;color:var(--tx3);font-style:italic;margin-bottom:.875rem}
+.mt{display:flex;border-bottom:1px solid var(--bd);margin-bottom:.875rem;overflow-x:auto;-webkit-overflow-scrolling:touch;gap:0;scrollbar-width:none}
+.mt::-webkit-scrollbar{display:none}
+.mt button{padding:.55rem .9rem;font-size:13px;font-weight:500;cursor:pointer;border:none;background:transparent;color:var(--tx2);border-bottom:2px solid transparent;font-family:'DM Sans',sans-serif;white-space:nowrap;flex-shrink:0}
+.mt button.on{color:var(--bl);border-bottom-color:var(--bl)}
+.tp{display:none}.tp.on{display:block}
+.sl{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--tx3);margin:1rem 0 .4rem}
+.tb{background:var(--bl-l);border:1px solid var(--bl-m);border-radius:var(--r);padding:.8rem .9rem;font-size:13.5px;color:#1e40af;line-height:1.6}
+.wb{background:var(--ro-l);border:1px solid #fecdd3;border-radius:var(--r);padding:.8rem .9rem;font-size:13.5px;color:var(--ro);line-height:1.6}
+.sl-list{list-style:none;counter-reset:s}
+.sl-list li{counter-increment:s;padding:9px 0 9px 2.5rem;position:relative;font-size:13.5px;line-height:1.6;border-bottom:1px solid var(--bd);color:var(--tx2)}
+.sl-list li:last-child{border-bottom:none}
+.sl-list li::before{content:counter(s);position:absolute;left:0;top:9px;width:22px;height:22px;background:var(--bl-l);color:var(--bl);border-radius:50%;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.mc-list{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.mc-chip{font-size:12px;padding:4px 11px;background:var(--gr-l);color:var(--gr);border-radius:999px;font-weight:500}
+/* ── PLAN ── */
+.ph{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;flex-wrap:wrap;gap:10px}
+.ph h2{font-family:'DM Serif Display',serif;font-size:24px}
+.ws{display:flex;gap:5px;align-items:center;flex-wrap:wrap}
+.wb2{padding:5px 14px;border:1px solid var(--bd);border-radius:var(--r);font-size:13px;font-weight:500;cursor:pointer;background:var(--sf);color:var(--tx2);font-family:'DM Sans',sans-serif;min-height:36px}
+.wb2.on{background:var(--bl);color:#fff;border-color:var(--bl)}
+.db-wrap{display:flex;flex-direction:column;gap:14px}
+.db{background:var(--sf);border:1px solid var(--bd);border-radius:var(--rl);overflow:hidden}
+.dbh{display:flex;align-items:center;gap:10px;padding:.875rem 1.125rem;border-bottom:1px solid var(--bd);cursor:pointer;-webkit-user-select:none;user-select:none}
+.dbh:active{background:var(--sf2)}
+.di{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.di.push{background:var(--am-l)}.di.pull{background:var(--bl-l)}
+.dt{font-family:'DM Serif Display',serif;font-size:17px;flex:1}
+.dm{font-size:11px;color:var(--tx3)}
+.dc{font-size:20px;color:var(--tx3);transition:transform .2s;line-height:1;flex-shrink:0}
+.db.open .dc{transform:rotate(90deg)}
+.dbd{display:none}.db.open .dbd{display:block}
+.pt{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table.plan{width:100%;border-collapse:collapse;min-width:720px}
+table.plan th{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--tx3);padding:9px 11px;text-align:left;border-bottom:1px solid var(--bd);background:var(--sf2);white-space:nowrap}
+table.plan td{padding:10px 11px;font-size:13.5px;border-bottom:1px solid var(--bd);vertical-align:middle}
+table.plan tr:last-child td{border-bottom:none}
+.rc td{background:#f0fdf4!important}.rd td{background:#faf5ff!important}
+body.dark .rc td{background:#0a1f0e!important}.dark .rd td{background:#1a1030!important}
+body.dark .dj-core-bg{background:#0a1f0e!important;color:var(--tx)}
+body.dark .dj-card-bg{background:#1a1030!important;color:var(--tx)}
+.el{font-family:'DM Serif Display',serif;font-size:14px;color:var(--tx);cursor:pointer;display:flex;align-items:center;gap:4px}
+.el:active{color:var(--bl)}
+@media(hover:hover){.el:hover{color:var(--bl)}}
+.eli{font-size:10px;opacity:.4}
+.ri{display:flex;gap:3px;align-items:center}
+.ri input{width:52px;padding:6px 5px;border:1px solid var(--bd);border-radius:8px;font-size:16px;font-family:'DM Sans',sans-serif;background:var(--sf);color:var(--tx);text-align:center;-webkit-appearance:none;appearance:none}
+.ri input:focus{outline:none;border-color:var(--bl)}
+.ri input.f{border-color:var(--bl-m);background:var(--bl-l)}
+.ru{font-size:10px;color:var(--tx3);font-weight:600}
+/* ── PROGRESS ── */
+.prh{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;flex-wrap:wrap;gap:10px}
+.prh h2{font-family:'DM Serif Display',serif;font-size:24px}
+.ss{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:1.25rem}
+.sc{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:.875rem 1rem;text-align:center}
+.sv{font-size:20px;font-weight:600;color:var(--bl)}
+.sk{font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.04em;margin-top:2px}
+.ps{margin-bottom:1.75rem}
+.pt2{font-family:'DM Serif Display',serif;font-size:19px;margin-bottom:10px;padding-bottom:7px;border-bottom:2px solid var(--bd)}
+.pg{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.pcard{background:var(--sf);border:1px solid var(--bd);border-radius:var(--rl);padding:1.125rem}
+.pcard h4{font-family:'DM Serif Display',serif;font-size:14px;margin-bottom:9px;line-height:1.3}
+.pw{display:flex;gap:4px}
+.pwc{flex:1;border:1px solid var(--bd);border-radius:8px;padding:7px 3px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:flex-start}
+.pwl{font-size:9px;font-weight:700;text-transform:uppercase;color:var(--tx3);letter-spacing:.04em;line-height:1.2}
+.pwkg{font-size:12px;font-weight:600;color:var(--tx);margin-top:2px;line-height:1.2}
+.pwarrow{font-size:11px;height:16px;line-height:16px;display:flex;align-items:center;justify-content:center}
+.pwr{font-size:10px;color:var(--tx3);line-height:1.2}
+.pwc.hd2{border-color:var(--bl-m);background:var(--bl-l)}
+.pwc.hd2 .pwkg{color:var(--bl)}
+.tu{color:var(--gr)}.td2{color:var(--ro)}
+/* ── BUTTONS ── */
+.btn{padding:8px 16px;border-radius:var(--r);font-size:13px;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;border:1px solid var(--bd);background:var(--sf);color:var(--tx);min-height:38px}
+.btn-p{background:var(--bl);color:#fff;border-color:var(--bl)}
+.btn-s{padding:5px 12px;font-size:12px;min-height:32px}
+.btn-d{color:var(--ro);border-color:#fecdd3}
+/* ── TOAST ── */
+.toast{position:fixed;bottom:calc(16px + var(--sab));right:1rem;background:var(--tx);color:#fff;padding:9px 16px;border-radius:var(--r);font-size:13px;z-index:999;opacity:0;transform:translateY(6px);transition:opacity .2s,transform .2s;pointer-events:none;max-width:calc(100vw - 2rem)}
+.toast.on{opacity:1;transform:translateY(0)}
+/* ── MISC ── */
+.es{text-align:center;padding:3rem 1.5rem;color:var(--tx3)}
+.es .big{font-family:'DM Serif Display',serif;font-size:26px;color:var(--tx2);margin-bottom:.4rem}
+/* ── MOBILE ── */
+@media(max-width:900px){.ss{grid-template-columns:repeat(2,1fr)}.eg{grid-template-columns:1fr}}
+@media(max-width:600px){
+  .hd{padding:0 1rem;gap:1rem}
+  .logo s{display:none}
+  .hs{gap:.75rem}
+  .hs-week{display:none}
+  nav{position:fixed;bottom:0;left:0;right:0;z-index:100;background:var(--sf);border-top:1px solid var(--bd);height:auto;padding-bottom:var(--sab)}
+  .nb{flex:1;padding:6px 1px 8px;font-size:8px;border-bottom:none;border-top:2px solid transparent;display:flex;flex-direction:column;align-items:center;gap:2px;line-height:1.2;height:auto}
+  .nb.on{border-top-color:var(--bl);color:var(--bl);border-bottom:none}
+  .nb::before{font-size:18px;line-height:1;display:block}
+  .nb:nth-child(1)::before{content:"📋"}.nb:nth-child(2)::before{content:"📓"}.nb:nth-child(3)::before{content:"📈"}.nb:nth-child(4)::before{content:"📏"}
+  .main{padding:.875rem .875rem calc(60px + var(--sab) + .875rem)}
+  .ph{flex-direction:column;align-items:flex-start}
+  .ws{width:100%;overflow-x:auto;flex-wrap:nowrap;padding-bottom:3px;scrollbar-width:none}.ws::-webkit-scrollbar{display:none}
+  .wb2{flex-shrink:0}
+  .mb{align-items:flex-end}
+  .md{border-radius:var(--rl) var(--rl) 0 0;max-height:94vh}
+  .ss{grid-template-columns:repeat(2,1fr);gap:8px}
+  .pg{grid-template-columns:1fr}
+  .toast{bottom:calc(60px + var(--sab) + 6px);right:.875rem;left:.875rem;text-align:center}
+  .btn{min-height:44px}
+  .pwkg{font-size:11px;line-height:1.2}
+  table.plan td,table.plan th{padding:8px 8px}
+  .mbh-plan{display:none}
+}
+@media(max-width:380px){
+  .dt{font-size:14px}.nb{font-size:8px}
+}
+
+/* ── PROGRESS v2 ── */
+.prg-ex-block{background:var(--sf);border:1px solid var(--bd);border-radius:var(--rl);overflow:hidden;margin-bottom:10px}
+.prg-ex-header{display:flex;align-items:center;gap:10px;padding:.875rem 1.125rem;cursor:pointer;-webkit-user-select:none;user-select:none}
+.prg-ex-header:active{background:var(--sf2)}
+.prg-ex-name{font-family:'DM Serif Display',serif;font-size:15px;flex:1;line-height:1.3}
+.prg-ex-badge{font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;white-space:nowrap;flex-shrink:0}
+.prg-ex-badge.up{background:var(--gr-l);color:var(--gr)}
+.prg-ex-badge.dn{background:var(--ro-l);color:var(--ro)}
+.prg-ex-badge.eq{background:var(--sf2);color:var(--tx3)}
+.prg-ex-badge.none{background:var(--sf2);color:var(--tx3)}
+.prg-ex-body{display:none;border-top:1px solid var(--bd)}
+.prg-ex-block.open .prg-ex-body{display:block}
+.prg-ex-block.open .prg-chevron{transform:rotate(90deg)}
+.prg-chevron{font-size:18px;color:var(--tx3);transition:transform .2s;flex-shrink:0}
+.prg-week-table{width:100%;border-collapse:collapse}
+.prg-week-table tr{border-bottom:1px solid var(--bd)}
+.prg-week-table tr:last-child{border-bottom:none}
+.prg-week-table td{padding:10px 1.125rem;font-size:13.5px;vertical-align:middle}
+.prg-week-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;width:36px;color:var(--tx3)}
+.prg-week-main{font-weight:600;color:var(--tx);min-width:70px}
+.prg-week-reps{font-size:12px;color:var(--tx3);padding-left:4px}
+.prg-week-delta{font-size:12px;font-weight:600;text-align:right;width:80px}
+.prg-week-delta.up{color:var(--gr)}
+.prg-week-delta.dn{color:var(--ro)}
+.prg-week-delta.eq{color:var(--tx3)}
+.prg-week-table tr.half-break td{border-top:2px solid var(--bl-m)}
+.prg-week-table tr.no-data td{opacity:.35}
+.prg-day-hd{display:flex;align-items:center;gap:10px;padding:.75rem 1.125rem;cursor:pointer;border-bottom:1px solid var(--bd);-webkit-user-select:none;user-select:none}
+.prg-day-hd:active{background:var(--sf2)}
+html{overscroll-behavior:none}
+.md,.dbd,.pt,.ws,.mt{overscroll-behavior:contain}
+</style>
+</head>
+<body>
+<div class="hd">
+  <div class="logo">Alicja <s>Trening</s></div>
+  <nav>
+    <button class="nb on" onclick="nav('plan',this)">Plan</button>
+    <button class="nb" onclick="nav('dziennik',this)">Dziennik</button>
+    <button class="nb" onclick="nav('progress',this)">Postępy</button>
+    <button class="nb" onclick="nav('pomiary',this)">Pomiary</button>
+  </nav>
+  <div class="hs">
+    <button class="dm-btn" onclick="toggleDark()" id="dmBtn" title="Tryb ciemny">🌙</button>
+    <div class="hs-week"><div class="hv" id="hW">T1</div><div class="hl">Tydzień</div></div>
+  </div>
+</div>
+
+<div class="main">
+
+<!-- PLAN -->
+<div class="sec on" id="s-plan">
+  <div class="ph">
+    <h2>Plan Treningowy</h2>
+    <div class="ws">
+      <button class="wb2 on" onclick="swPlan(1,this)">T1</button>
+      <button class="wb2" onclick="swPlan(2,this)">T2</button>
+      <button class="wb2" onclick="swPlan(3,this)">T3</button>
+      <button class="wb2" onclick="swPlan(4,this)">T4</button>
+      <button class="wb2" onclick="swPlan(5,this)">T5</button>
+    </div>
+  </div>
+  <div class="db-wrap" id="planBlocks"></div>
+</div>
+
+<!-- DZIENNIK -->
+<div class="sec" id="s-dziennik">
+  <div class="ph">
+    <h2>Dziennik</h2>
+    <div class="ws">
+      <button class="wb2 on" onclick="sw(1,this)">T1</button>
+      <button class="wb2" onclick="sw(2,this)">T2</button>
+      <button class="wb2" onclick="sw(3,this)">T3</button>
+      <button class="wb2" onclick="sw(4,this)">T4</button>
+      <button class="wb2" onclick="sw(5,this)">T5</button>
+    </div>
+  </div>
+  <div class="db-wrap" id="dayBlocks"></div>
+</div>
+
+<!-- POSTĘPY -->
+<div class="sec" id="s-progress">
+  <div class="prh">
+    <h2>Postępy</h2>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end">
+      <button class="btn btn-s btn-d" onclick="clrAll()">Wyczyść</button>
+      <button class="btn btn-s" onclick="expJSON()" style="border-color:var(--gr);color:var(--gr)">&#11015; Eksport danych</button>
+      <button class="btn btn-s" onclick="impJSON()" style="border-color:var(--pu);color:var(--pu)">&#11014; Import danych</button>
+      <button class="btn btn-s btn-p" onclick="expCSV()">Eksport CSV</button>
+    </div>
+    <input type="file" id="jsonFileInput" accept=".json" style="display:none" onchange="loadJSONFile(event)">
+  </div>
+  <div class="ss">
+    <div class="sc"><div class="sv" id="sW">–</div><div class="sk">Tygodnie</div></div>
+    <div class="sc"><div class="sv" id="sD">–</div><div class="sk">Ostatni wpis</div></div>
+  </div>
+  <div class="db-wrap" id="progContent"></div>
+</div>
+
+<!-- POMIARY -->
+<div class="sec" id="s-pomiary">
+  <div class="prh">
+    <h2>Pomiary ciała</h2>
+  </div>
+  <div class="db-wrap" id="pomiaBlocks"></div>
+</div>
+
+</div><!-- /main -->
+
+<!-- TIMER OVERLAY -->
+<div id="timerOverlay" onclick="timerOverlayClick(event)">
+  <div id="timerLabel">Przerwa</div>
+  <div id="timerRing">
+    <svg width="200" height="200" viewBox="0 0 200 200">
+      <circle class="bg" cx="100" cy="100" r="88"/>
+      <circle class="fg" id="timerArc" cx="100" cy="100" r="88" stroke-dasharray="553" stroke-dashoffset="0"/>
+    </svg>
+    <div id="timerNum">–</div>
+  </div>
+  <div id="timerBtns">
+    <button class="t-btn t-btn-add" onclick="timerAdd(30)">+30s</button>
+    <button class="t-btn t-btn-stop" onclick="timerStop()">Zatrzymaj</button>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="mb" id="MB" onclick="mbClick(event)">
+  <div class="md">
+    <button class="mc" onclick="closeMod()">×</button>
+    <div id="mBadge"></div>
+    <h2 id="mTitle"></h2>
+    <div class="mmt" id="mMuscle"></div>
+    <div class="mt">
+      <button class="on" onclick="tab('w',this)">💡 Wskazówki</button>
+      <button onclick="tab('i',this)">📋 Instrukcja</button>
+      <button onclick="tab('b',this)">⚠️ Błędy</button>
+      <button onclick="tab('c',this)">💪 Co ćwiczysz</button>
+    </div>
+    <div class="tp on" id="tp-w"></div>
+    <div class="tp" id="tp-i"></div>
+    <div class="tp" id="tp-b"></div>
+    <div class="tp" id="tp-c"></div>
+    <div style="margin-top:1.125rem;padding-top:1.125rem;border-top:1px solid var(--bd)">
+      <div class="sl">Schemat — 5 tygodni</div>
+      <div id="mPlan"></div>
+      <div style="margin-top:.875rem"><a id="mLink" href="#" target="_blank" rel="noopener" class="btn btn-s btn-p">▶ Szukaj na YouTube</a></div>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+
+// ── DNI TRENINGOWE ──
+const DD=[
+  {id:'D1',label:'Dzień 1 – Dół (Pewny)',icon:'🍑',ic:'push',optional:false},
+  {id:'D2',label:'Dzień 2 – Góra (Pewny)',icon:'💪',ic:'pull',optional:false},
+  {id:'D3',label:'Dzień 3 – Dół (Opcjonalny)',icon:'🔥',ic:'push',optional:true},
+  {id:'D4',label:'Dzień 4 – Góra + Core (Opcjonalny)',icon:'⭐',ic:'pull',optional:true},
+];
+const BM={dol:'badge bp',gora:'badge bu',core:'badge bc',cardio:'badge bd'};
+const BL={dol:'Dół',gora:'Góra',core:'Core',cardio:'Cardio'};
+const WC=['blue','blue','green','green','orange'];
+let CW=1;
+
+const RES=(function(){
+  const s=localStorage.getItem('krt6v2');
+  return s?JSON.parse(s):{};
+})();
+
+function ytLink(name){return 'https://www.youtube.com/results?search_query='+encodeURIComponent(name+' technika wykonania');}
+
+// ── SCHEMATY PROGRESJI (5 tygodni: T1-T4 progresja, T5 deload) ──
+// A: ciężkie ruchy typu hip-hinge (Hip Thrust, RDL)
+const WA=[{s:'3',r:'15',rest:'1:15'},{s:'3',r:'15',rest:'1:15'},{s:'3',r:'12',rest:'1:30'},{s:'4',r:'12',rest:'1:30'},{s:'2',r:'15',rest:'1:00'}];
+// B: wykroki jednostronne (lekki quad, kontrola)
+const WB=[{s:'3',r:'10/str.',rest:'1:15'},{s:'3',r:'10/str.',rest:'1:15'},{s:'3',r:'12/str.',rest:'1:30'},{s:'4',r:'10/str.',rest:'1:30'},{s:'2',r:'10/str.',rest:'1:00'}];
+// C: izolacja dolna, obustronna (odwodzenie, leg curl)
+const WC1=[{s:'3',r:'15',rest:'1:00'},{s:'3',r:'15',rest:'1:00'},{s:'4',r:'12',rest:'1:15'},{s:'4',r:'15',rest:'1:15'},{s:'2',r:'15',rest:'1:00'}];
+// C2: izolacja dolna, jednostronna (kickback, donkey kick, odwodzenie stojąc)
+const WC2=[{s:'3',r:'12/str.',rest:'1:00'},{s:'3',r:'12/str.',rest:'1:00'},{s:'4',r:'10/str.',rest:'1:15'},{s:'4',r:'12/str.',rest:'1:15'},{s:'2',r:'12/str.',rest:'1:00'}];
+// D: finisher cardio
+const WD=[{s:'1',r:'8 min',rest:'–'},{s:'1',r:'10 min',rest:'–'},{s:'1',r:'10 min',rest:'–'},{s:'1',r:'12 min',rest:'–'},{s:'1',r:'8 min',rest:'–'}];
+// E: górne ruchy złożone (press, wiosłowanie, ściąganie)
+const WE=[{s:'3',r:'12',rest:'1:30'},{s:'3',r:'12',rest:'1:30'},{s:'4',r:'10',rest:'1:45'},{s:'4',r:'10',rest:'1:45'},{s:'2',r:'12',rest:'1:15'}];
+// F: górne izolacja (face pull, wznosy boczne)
+const WF=[{s:'3',r:'15',rest:'1:00'},{s:'3',r:'15',rest:'1:00'},{s:'3',r:'12',rest:'1:15'},{s:'4',r:'12',rest:'1:15'},{s:'2',r:'15',rest:'1:00'}];
+// G: deska (czas)
+const WG=[{s:'3',r:'30s',rest:'1:00'},{s:'3',r:'35s',rest:'1:00'},{s:'3',r:'40s',rest:'1:00'},{s:'4',r:'40s',rest:'1:00'},{s:'2',r:'30s',rest:'1:00'}];
+// H: core antyrotacyjny jednostronny (Pallof)
+const WH=[{s:'3',r:'10/str.',rest:'1:00'},{s:'3',r:'12/str.',rest:'1:00'},{s:'3',r:'12/str.',rest:'1:00'},{s:'4',r:'10/str.',rest:'1:00'},{s:'2',r:'10/str.',rest:'1:00'}];
+// I: core jednostronny, dynamiczny (Dead Bug)
+const WI=[{s:'3',r:'8/str.',rest:'1:00'},{s:'3',r:'10/str.',rest:'1:00'},{s:'3',r:'10/str.',rest:'1:00'},{s:'4',r:'10/str.',rest:'1:00'},{s:'2',r:'8/str.',rest:'1:00'}];
+// J: core reps klasyczne (Brzuszki)
+const WJ=[{s:'3',r:'15',rest:'0:45'},{s:'3',r:'18',rest:'0:45'},{s:'3',r:'20',rest:'0:45'},{s:'4',r:'15',rest:'0:45'},{s:'2',r:'15',rest:'0:45'}];
+// K: deska boczna, czas, jednostronna
+const WK=[{s:'2',r:'20s/str.',rest:'1:00'},{s:'2',r:'25s/str.',rest:'1:00'},{s:'3',r:'25s/str.',rest:'1:00'},{s:'3',r:'30s/str.',rest:'1:00'},{s:'2',r:'20s/str.',rest:'1:00'}];
+
+const EX = [
+// ━━━━━━━━━━━━━━━━━━━━━━ D1 — DÓŁ (PEWNY) ━━━━━━━━━━━━━━━━━━━━━━
+{id:'d1_1',day:'D1',type:'dol',isCore:false,
+name:'Hip Thrust ze sztangą',muscle:'Mięsień pośladkowy wielki, dwugłowy uda (pomocniczo)',
+link:ytLink('Hip Thrust'),weeks:WA,
+wskazowki:[
+  'Górna część pleców (łopatki) oparta o krawędź ławki, sztanga tuż nad biodrami — użyj poduszki dla komfortu.',
+  'W górnej pozycji mocno zaciśnij pośladki, jakbyś chciała utrzymać między nimi kartkę papieru — to moment "peak contraction".',
+  'Broda lekko podkulona, wzrok przed siebie, nie w sufit — chroni szyję i utrzymuje neutralną miednicę.',
+  'Żebra "zamknięte", bez przeprostu odcinka lędźwiowego w górnej fazie ruchu.'
+],
+instrukcja:[
+  'Usiądź na podłodze, oprzyj górne plecy o krawędź ławki, sztangę ułóż nad biodrami.',
+  'Stopy płasko, na szerokość bioder, kolana ugięte pod kątem ok. 90° w górnej pozycji.',
+  'Wdech — opuść biodra w dół, aż pośladki prawie dotkną podłogi.',
+  'Z wydechem wypchnij biodra w górę, mocno zaciskając pośladki na szczycie ruchu.',
+  'Zatrzymaj 1-2 sek na górze, następnie kontrolowanie wróć w dół.'
+],
+bledy:[
+  'Przeprost lędźwi w górnej pozycji (zbyt mocne "wypychanie brzucha") — wtedy pracują plecy, nie pośladki.',
+  'Zbyt szybkie tempo — bez kontroli traci się napięcie mięśniowe.',
+  'Patrzenie w sufit — niekorzystne ułożenie szyi i miednicy.'
+],
+cwiczysz:['Pośladek wielki','Dwugłowy uda']},
+
+{id:'d1_2',day:'D1',type:'dol',isCore:false,
+name:'Wykroki w miejscu z hantlami (Stationary Lunges)',muscle:'Pośladek wielki, czworogłowy uda (umiarkowanie)',
+link:ytLink('Wykroki w miejscu z hantlami'),weeks:WB,
+wskazowki:[
+  'Krok wystarczająco długi, by w dolnej pozycji kolano przedniej nogi było nad kostką, nie wystawało daleko przed palce.',
+  'Tułów pionowy przez cały ruch — lekkie pochylenie do przodu przenosi więcej pracy na pośladek.',
+  'Wypychaj się głównie piętą przedniej stopy — to mocniej aktywuje pośladek niż palce.',
+  'Lekkie hantle — to ćwiczenie kontrolne, jakość ruchu jest ważniejsza niż ciężar.'
+],
+instrukcja:[
+  'Stań w rozkroku przód-tył, hantle po bokach ciała.',
+  'Wdech — ugnij oba kolana, opuszczając biodra prosto w dół.',
+  'Tylne kolano lekko nad podłogą, przednie pod kątem ok. 90°.',
+  'Z wydechem wypchnij się piętą przedniej stopy do góry.',
+  'Wykonaj wszystkie powtórzenia jedną nogą, zmień stronę.'
+],
+bledy:[
+  'Kolano przedniej nogi wychodzi mocno do wewnątrz (koślawienie) — kontroluj tor ruchu.',
+  'Zbyt krótki krok — przeciąża kolano zamiast pośladka.',
+  'Odbijanie się w dolnej pozycji zamiast kontrolowanego ruchu.'
+],
+cwiczysz:['Pośladek wielki','Czworogłowy uda']},
+
+{id:'d1_3',day:'D1',type:'dol',isCore:false,
+name:'Odwodzenie nogi na maszynie (Hip Abduction Machine)',muscle:'Pośladek średni i mały',
+link:ytLink('Hip Abduction Machine'),weeks:WC1,
+wskazowki:[
+  'Plecy pełne oparcie o siedzisko — zero pochylania do przodu, bo to wyłącza pośladek średni.',
+  'Ruch wykonuj powoli, szczególnie w fazie powrotnej (2 sek) — buduje kontrolę i kształt pośladka z boku.',
+  'Zatrzymaj 1 sek w skrajnym rozwarciu ud — to moment największej aktywacji pośladka średniego.',
+  'Umiarkowany ciężar i duża liczba powtórzeń działają tu najlepiej.'
+],
+instrukcja:[
+  'Usiądź w maszynie, zewnętrzne części ud oprzyj o poduszki.',
+  'Plecy dociśnięte do oparcia, miednica neutralna.',
+  'Z wydechem rozsuń uda na zewnątrz, ruch prowadzony ze stawu biodrowego.',
+  'Zatrzymaj chwilę w skrajnej pozycji.',
+  'Wdech — powoli wróć do pozycji wyjściowej.'
+],
+bledy:[
+  'Pochylanie tułowia do przodu — kompensacja zamiast pracy pośladka.',
+  'Zbyt szybkie, "rzucane" powtórzenia — tracisz kluczową fazę ekscentryczną.',
+  'Zbyt duży ciężar powodujący kołysanie miednicy.'
+],
+cwiczysz:['Pośladek średni','Pośladek mały']},
+
+{id:'d1_4',day:'D1',type:'dol',isCore:false,
+name:'Uginanie nóg leżąc na maszynie (Lying Leg Curl)',muscle:'Dwugłowy uda, półścięgnisty, półbłoniasty',
+link:ytLink('Lying Leg Curl'),weeks:WC1,
+wskazowki:[
+  'To ćwiczenie w pełni izoluje tył uda — nie angażuje czworogłowego, dokładnie to czego potrzebujesz.',
+  'Biodra dociśnięte do ławki przez cały ruch — nie unoś ich przy uginaniu.',
+  'Wałek maszyny ustaw przy kostkach, nie przy łydce — inny punkt oparcia zmienia dźwignię.',
+  'Kontrolowany powrót (2-3 sek) daje więcej efektu niż samo zginanie.'
+],
+instrukcja:[
+  'Połóż się na brzuchu, kostki pod wałkiem maszyny.',
+  'Chwyć uchwyty, miednica neutralna, biodra przy ławce.',
+  'Z wydechem ugnij nogi, przyciągając pięty do pośladków.',
+  'Zatrzymaj 1 sek w górnej pozycji.',
+  'Wdech — powoli wyprostuj nogi do pozycji startowej.'
+],
+bledy:[
+  'Unoszenie bioder od ławki — zmniejsza efektywność i obciąża dolny odcinek pleców.',
+  'Zbyt szybki powrót — tracisz fazę ekscentryczną, kluczową dla efektu.',
+  'Odbijanie w dolnej pozycji.'
+],
+cwiczysz:['Dwugłowy uda','Półścięgnisty','Półbłoniasty']},
+
+{id:'d1_5',day:'D1',type:'dol',isCore:false,
+name:'Kickback pośladkowy na wyciągu (Cable Glute Kickback)',muscle:'Pośladek wielki — izolacja',
+link:ytLink('Cable Glute Kickback'),weeks:WC2,
+wskazowki:[
+  'Stań blisko wyciągu, lekko pochyl tułów do przodu i przytrzymaj się ramy dla stabilizacji.',
+  'Ruch wykonuj wyłącznie w stawie biodrowym — kolano nogi roboczej lekko ugięte, ale nie prostuj go dodatkowo.',
+  'Zatrzymaj nogę w górnej pozycji na 1-2 sek i mocno zaciśnij pośladek — to najważniejszy moment ćwiczenia.',
+  'Mały zakres ruchu z pełną kontrolą działa lepiej niż duży zakres z rozpędem.'
+],
+instrukcja:[
+  'Zapnij linkę do kostki, stań przodem do wyciągu, trzymaj się ramy.',
+  'Lekko pochyl tułów do przodu, miednica neutralna.',
+  'Z wydechem odepchnij nogę do tyłu i lekko w górę, prowadząc ruch biodrem.',
+  'Zatrzymaj w górnej pozycji, mocno napinając pośladek.',
+  'Wdech — powoli wróć do pozycji wyjściowej, bez rozpędu.'
+],
+bledy:[
+  'Wyginanie odcinka lędźwiowego zamiast ruchu w biodrze — ogranicz zakres, jeśli to się dzieje.',
+  'Zbyt duży ciężar wymuszający bujanie tułowiem.',
+  'Brak zatrzymania i zaciśnięcia pośladka na górze.'
+],
+cwiczysz:['Pośladek wielki']},
+
+{id:'d1_core',day:'D1',type:'core',isCore:true,
+name:'Dead Bug (Martwy Robak)',muscle:'Poprzeczny brzucha, prosty brzucha, stabilizatory bioder',
+link:ytLink('Dead Bug ćwiczenie technika'),weeks:WI,
+wskazowki:[
+  'To ćwiczenie uczy stabilizacji core bez obciążania kręgosłupa — świetne uzupełnienie dnia dolnych partii.',
+  'Kluczowe: przez cały ruch dolny odcinek pleców pozostaje dociśnięty do maty, bez wyginania.',
+  'Ruch wykonuj powoli (2-3 sek w każdą stronę) — pośpiech psuje wzorzec i zmniejsza efekt.',
+  'Oddychaj spokojnie, wydech przy opuszczaniu kończyn — nie wstrzymuj oddechu.'
+],
+instrukcja:[
+  'Połóż się na plecach, unieś uda pionowo (kolana 90°), ramiona wyciągnięte ku sufitowi.',
+  'Wdech — dociśnij dolny odcinek pleców do maty.',
+  'Z wydechem powoli opuść jedną rękę nad głowę i przeciwną nogę ku podłodze.',
+  'Plecy muszą pozostać przy macie — jeśli się unoszą, zmniejsz zakres ruchu.',
+  'Wdech — wróć do pozycji startowej, zmień strony.'
+],
+bledy:[
+  'Odrywanie dolnego odcinka pleców od maty — to sygnał do zmniejszenia zakresu ruchu.',
+  'Zbyt szybkie ruchy kończyn — utrata kontroli nad miednicą.',
+  'Wstrzymywanie oddechu podczas ruchu.'
+],
+cwiczysz:['Poprzeczny brzucha','Prosty brzucha']},
+
+{id:'d1_cardio',day:'D1',type:'cardio',isCore:false,
+name:'Marsz na bieżni pod kątem / Stepper (finisher)',muscle:'Praca tlenowa — wsparcie redukcji tkanki tłuszczowej',
+link:ytLink('marsz na bieżni pod kątem trening'),weeks:WD,
+wskazowki:[
+  'To element planu wspierający spalanie kalorii — nie buduje masy mięśniowej, tylko wspomaga redukcję tkanki tłuszczowej w połączeniu z dietą.',
+  'Ustaw umiarkowane tempo i wyraźny kąt nachylenia (8-12%) — chodzi o wysiłek tlenowy, nie sprint.',
+  'Powinnaś być w stanie prowadzić rozmowę, ale z lekką zadyszką — to strefa spalania tłuszczu.',
+  'Wykonuj ten finisher na koniec treningu, gdy mięśnie są już rozgrzane.'
+],
+instrukcja:[
+  'Ustaw bieżnię na nachylenie 8-12% lub wybierz program "wzgórza" na stepperze.',
+  'Rozpocznij marsz w umiarkowanym, stałym tempie.',
+  'Utrzymuj wyprostowaną sylwetkę, nie trzymaj się mocno poręczy.',
+  'Kontynuuj przez zadany czas, oddychając spokojnie i rytmicznie.'
+],
+bledy:[
+  'Zbyt intensywne tempo od razu — lepiej dłużej i spokojniej niż krótko i maksymalnie.',
+  'Opieranie się całym ciężarem o poręcze — zmniejsza efektywność spalania kalorii.',
+  'Pomijanie tego elementu — to on realnie wspiera redukcję tkanki tłuszczowej, nie same ćwiczenia siłowe.'
+],
+cwiczysz:['Układ krążeniowo-oddechowy','Ogólna wydolność']},
+
+// ━━━━━━━━━━━━━━━━━━━━━━ D2 — GÓRA (PEWNY) ━━━━━━━━━━━━━━━━━━━━━━
+{id:'d2_1',day:'D2',type:'gora',isCore:false,
+name:'Wyciskanie hantli na ławce skośnej (Incline DB Press)',muscle:'Górna część piersiowego większego, naramienny przedni, trójgłowy ramienia',
+link:ytLink('Incline Dumbbell Press'),weeks:WE,
+wskazowki:[
+  'Ustaw ławkę pod kątem 30-45° — wyżej przenosi ciężar na barki, niżej na całą klatkę.',
+  'Łopatki ściągnięte i dociśnięte do ławki przez cały ruch — to daje stabilną bazę do wyciskania.',
+  'Hantle opuszczaj do poziomu górnej części klatki, łokcie pod kątem ok. 45-60° od tułowia.',
+  'Nie musisz używać dużych ciężarów — liczy się jakość ruchu i pełny zakres.'
+],
+instrukcja:[
+  'Usiądź na ławce skośnej, hantle oprzyj na udach, jednym ruchem unieś je nad klatkę.',
+  'Łopatki ściągnięte, stopy płasko na podłodze.',
+  'Wdech — opuszczaj hantle kontrolowanie do poziomu górnej klatki.',
+  'Z wydechem wyciskaj hantle w górę, nie łącząc ich mocno na szczycie.',
+  'Powtórz w kontrolowanym tempie.'
+],
+bledy:[
+  'Zbyt duży kąt ławki — ćwiczenie zamienia się w wyciskanie barków.',
+  'Odrywanie łopatek od ławki — traci się stabilność i moc.',
+  'Uderzanie hantlami o siebie na górze — utrata napięcia mięśniowego.'
+],
+cwiczysz:['Górna klatka piersiowa','Naramienny przedni','Trójgłowy ramienia']},
+
+{id:'d2_2',day:'D2',type:'gora',isCore:false,
+name:'Wiosłowanie hantlem w podporze jednorącz (One-Arm DB Row)',muscle:'Najszerszy grzbietu, romboidalny, tylny naramienny',
+link:ytLink('One Arm Dumbbell Row'),weeks:WE,
+wskazowki:[
+  'Oprzyj kolano i dłoń o ławkę — stabilizuje to kręgosłup i pozwala skupić się wyłącznie na pracy pleców.',
+  'Inicjuj ruch łopatką (ściągnij ją do kręgosłupa), dopiero potem uginaj łokieć — to klucz do poczucia pleców, nie bicepsa.',
+  'Prowadź hantel w kierunku biodra, nie klatki — mocniej angażuje najszerszy grzbietu.',
+  'Pełne rozciągnięcie w dolnej fazie — poczuj rozciąganie łopatki do przodu.'
+],
+instrukcja:[
+  'Kolano i dłoń jednej strony oprzyj na ławce, druga noga stabilnie na podłodze.',
+  'Hantel w opuszczonej ręce, ramię wyprostowane, plecy proste.',
+  'Z wydechem ściągnij łopatkę, następnie przyciągnij hantel do biodra.',
+  'Zatrzymaj 1 sek z napiętymi plecami.',
+  'Wdech — powoli opuść hantel do pełnego rozciągnięcia.'
+],
+bledy:[
+  'Rotacja tułowia przy każdym powtórzeniu — zmniejsz ciężar, jeśli to się zdarza.',
+  'Ciągnięcie samym bicepsem — plecy nie dostają bodźca.',
+  'Zbyt szybkie tempo — brak kontroli nad fazą ekscentryczną.'
+],
+cwiczysz:['Najszerszy grzbietu','Romboidalny','Tylny naramienny']},
+
+{id:'d2_3',day:'D2',type:'gora',isCore:false,
+name:'Ściąganie wyciągu górnego szerokim nachwytem (Wide Grip Lat Pulldown)',muscle:'Najszerszy grzbietu, obły większy, biceps (pomocniczo)',
+link:ytLink('Wide Grip Lat Pulldown'),weeks:WE,
+wskazowki:[
+  'Chwyt szerszy niż barki, dłonie nachwytem — najlepszy wariant do budowania szerokości pleców.',
+  'Zanim ugniesz łokcie, ściągnij łopatki w dół i do tyłu — to inicjuje prawidłowy wzorzec ruchu.',
+  'Ściągaj drążek do górnej części klatki, nie za głowę — bezpieczniejsze dla barków.',
+  'Lekkie odchylenie tułowia (10-15°) jest naturalne, ale nie zamieniaj tego w wiosłowanie.'
+],
+instrukcja:[
+  'Usiądź, uda zablokuj pod podkładkami, chwyć drążek szerokim nachwytem.',
+  'Wdech, ramiona w pełnym wyproście nad głową.',
+  'Z wydechem ściągnij łopatki w dół, następnie ugnij łokcie, prowadząc drążek do klatki.',
+  'Zatrzymaj 1 sek w dolnej pozycji.',
+  'Wdech — powoli wróć do pełnego wyprostu ramion.'
+],
+bledy:[
+  'Ściąganie za głowę — niepotrzebne obciążenie barków i szyi.',
+  'Bujanie tułowiem, by "pomóc" sobie — sygnał zbyt dużego ciężaru.',
+  'Praca samym bicepsem bez inicjacji łopatką.'
+],
+cwiczysz:['Najszerszy grzbietu','Obły większy','Biceps']},
+
+{id:'d2_4',day:'D2',type:'gora',isCore:false,
+name:'Wyciskanie hantli siedząc (Seated DB Shoulder Press)',muscle:'Naramienny przedni i boczny, trójgłowy ramienia',
+link:ytLink('Seated Dumbbell Shoulder Press'),weeks:WE,
+wskazowki:[
+  'Ławka z oparciem pod kątem 85-90° — pełne oparcie pleców daje stabilną bazę do wyciskania.',
+  'Hantle startują na wysokości uszu, łokcie pod kątem ok. 90°.',
+  'Nie musisz w pełni blokować łokci na górze — lekkie ugięcie chroni stawy.',
+  'Umiarkowany ciężar, pełna kontrola — barki to delikatny staw, jakość ważniejsza niż siła.'
+],
+instrukcja:[
+  'Usiądź z pełnym oparciem pleców, hantle na wysokości uszu.',
+  'Wdech, następnie z wydechem wyciśnij hantle do góry, zbliżając je nad głową.',
+  'Zatrzymaj chwilę na górze bez pełnego blokowania łokci.',
+  'Wdech — powoli opuść hantle do poziomu uszu.',
+  'Powtórz w kontrolowanym tempie.'
+],
+bledy:[
+  'Wyginanie odcinka lędźwiowego podczas wyciskania — trzymaj plecy przy oparciu.',
+  'Opuszczanie hantli zbyt nisko, poniżej uszu — niepotrzebne obciążenie barku.',
+  'Zbyt szybkie, "wystrzałowe" powtórzenia bez kontroli.'
+],
+cwiczysz:['Naramienny przedni','Naramienny boczny','Trójgłowy ramienia']},
+
+{id:'d2_5',day:'D2',type:'gora',isCore:false,
+name:'Face Pull na wyciągu',muscle:'Tylny naramienny, mięśnie międzyłopatkowe',
+link:ytLink('Face Pull'),weeks:WF,
+wskazowki:[
+  'To ćwiczenie "korekcyjne" — buduje wyprostowaną sylwetkę pleców i przeciwdziała zaokrąglonym barkom.',
+  'Ciągnij linkę w kierunku twarzy, łokcie na wysokości barków — na końcu ruchu dłonie mijają uszy.',
+  'Skup się na ściąganiu łopatek do siebie, nie na sile ciągnięcia rękami.',
+  'Mały ciężar, dużo powtórzeń — to ćwiczenie techniczne, nie siłowe.'
+],
+instrukcja:[
+  'Ustaw wyciąg na wysokości twarzy, chwyć linę oburącz.',
+  'Zrób krok do tyłu, tak by lina była napięta.',
+  'Z wydechem ciągnij linę do twarzy, rozsuwając dłonie na boki, łokcie wysoko.',
+  'Zatrzymaj 1 sek, mocno ściskając łopatki.',
+  'Wdech — powoli wróć do pozycji wyjściowej.'
+],
+bledy:[
+  'Ciągnięcie liny nisko, do klatki — to zamienia ćwiczenie w inny ruch.',
+  'Zbyt duży ciężar uniemożliwiający pełne ściągnięcie łopatek.',
+  'Garbienie się podczas ruchu.'
+],
+cwiczysz:['Tylny naramienny','Mięśnie międzyłopatkowe']},
+
+{id:'d2_core',day:'D2',type:'core',isCore:true,
+name:'Brzuszki na macie (Crunches)',muscle:'Prosty brzucha (górna część)',
+link:ytLink('Crunches technika wykonania'),weeks:WJ,
+wskazowki:[
+  'Ruch to krótkie uniesienie łopatek nad matę, nie pełne siadanie — to chroni dolny odcinek pleców i lepiej izoluje brzuch.',
+  'Dłonie lekko przy skroniach lub skrzyżowane na klatce — nie ciągnij za głowę.',
+  'Zatrzymaj 1 sek w górnej pozycji, mocno napinając brzuch.',
+  'Wydech przy unoszeniu, wdech przy powrocie — spokojne, kontrolowane tempo.'
+],
+instrukcja:[
+  'Połóż się na plecach, kolana ugięte, stopy płasko na macie.',
+  'Dłonie lekko przy skroniach, łokcie na zewnątrz.',
+  'Z wydechem unieś łopatki nad matę, napinając brzuch.',
+  'Zatrzymaj 1 sek na górze.',
+  'Wdech — powoli wróć do pozycji wyjściowej, bez pełnego rozluźnienia między powtórzeniami.'
+],
+bledy:[
+  'Ciągnięcie głowy rękami — obciąża szyję zamiast pracy brzucha.',
+  'Pełne siadanie zamiast krótkiego uniesienia — angażuje biodra, nie brzuch.',
+  'Zbyt szybkie tempo bez zatrzymania na górze.'
+],
+cwiczysz:['Prosty brzucha']},
+
+// ━━━━━━━━━━━━━━━━━━━━━━ D3 — DÓŁ (OPCJONALNY) ━━━━━━━━━━━━━━━━━━━━━━
+{id:'d3_1',day:'D3',type:'dol',isCore:false,
+name:'Martwy ciąg rumuński z hantlami (RDL)',muscle:'Dwugłowy uda, pośladek wielki',
+link:ytLink('Romanian Deadlift Dumbbell'),weeks:WA,
+wskazowki:[
+  'To najlepsze ćwiczenie na "tył łańcucha" — buduje jednocześnie pośladek i tył uda, prawie bez udziału czworogłowego.',
+  'Hantle blisko ciała przez cały ruch — ślizgają się wzdłuż ud.',
+  'Biodra cofają się do tyłu jak zamykanie drzwi szafy — to nie jest przysiad, kolana zgięte tylko lekko i stale.',
+  'Poczuj wyraźne rozciąganie tyłu uda w dolnej pozycji — to sygnał, że robisz to poprawnie.'
+],
+instrukcja:[
+  'Stań w lekkim rozkroku, hantle trzymaj przed udami.',
+  'Wdech — zacznij ruch cofając biodra do tyłu, tułów pochyla się do przodu, plecy proste.',
+  'Opuszczaj hantle wzdłuż nóg, aż poczujesz mocne rozciąganie tyłu uda.',
+  'Z wydechem wróć do pozycji stojącej, prowadząc ruch biodrami, nie plecami.',
+  'Zaciśnij pośladki na szczycie ruchu.'
+],
+bledy:[
+  'Zaokrąglanie pleców — trzymaj naturalne wygięcie kręgosłupa przez cały ruch.',
+  'Zbyt głębokie zginanie kolan — to zamienia RDL w przysiad i przenosi pracę na quady.',
+  'Hantle oddalone od nóg — zwiększa obciążenie dolnego odcinka pleców.'
+],
+cwiczysz:['Dwugłowy uda','Pośladek wielki']},
+
+{id:'d3_2',day:'D3',type:'dol',isCore:false,
+name:'Hip Thrust jednonóż na ławce (Single-Leg Hip Thrust)',muscle:'Pośladek wielki — intensywna izolacja jednostronna',
+link:ytLink('Single Leg Hip Thrust'),weeks:WC2,
+wskazowki:[
+  'Wariant jednonóż mocniej angażuje pośladek niż wersja oburącz, bo eliminuje "pomaganie sobie" drugą nogą.',
+  'Druga noga może być ugięta w powietrzu lub lekko oparta na podłodze dla balansu, ale nie powinna pomagać w wypychaniu.',
+  'Pracująca stopa płasko na podłodze, blisko pośladków.',
+  'Mniejszy ciężar niż w wersji oburącz — jakość i pełna kontrola są tu najważniejsze.'
+],
+instrukcja:[
+  'Oprzyj górne plecy o ławkę, jedną stopę postaw płasko na podłodze, drugą unieś.',
+  'Wdech — opuść biodra w dół, kontrolując ruch.',
+  'Z wydechem wypchnij biodra w górę, pracując jedną nogą.',
+  'Zaciśnij pośladek na szczycie, zatrzymaj 1-2 sek.',
+  'Wykonaj wszystkie powtórzenia, zmień nogę.'
+],
+bledy:[
+  'Rotacja bioder w trakcie ruchu — utrzymuj miednicę równolegle do podłogi.',
+  'Zbyt duży ciężar wymuszający pomoc drugą nogą.',
+  'Przeprost lędźwi na górze ruchu.'
+],
+cwiczysz:['Pośladek wielki']},
+
+{id:'d3_3',day:'D3',type:'dol',isCore:false,
+name:'Odwodzenie nogi w bok stojąc na wyciągu (Standing Cable Hip Abduction)',muscle:'Pośladek średni — inny kąt pracy niż na maszynie',
+link:ytLink('Standing Cable Hip Abduction'),weeks:WC2,
+wskazowki:[
+  'Stojący wariant angażuje dodatkowo mięśnie stabilizujące miednicę nogi podporowej — bardziej funkcjonalny bodziec.',
+  'Trzymaj się ramy dla równowagi, ale nie odchylaj tułowia w stronę przeciwną do ruchu.',
+  'Ruch prowadź z biodra, noga robocza pozostaje wyprostowana przez cały czas.',
+  'Mały zakres z pełną kontrolą jest skuteczniejszy niż duży zakres z bujaniem miednicą.'
+],
+instrukcja:[
+  'Zapnij linkę do kostki, stań bokiem do wyciągu, przytrzymaj się ramy.',
+  'Miednica neutralna, tułów wyprostowany.',
+  'Z wydechem odwiedź nogę na zewnątrz.',
+  'Zatrzymaj chwilę w skrajnej pozycji.',
+  'Wdech — powoli wróć do środka, wykonaj serię, zmień stronę.'
+],
+bledy:[
+  'Przechylanie tułowia w bok — kompensacja zamiast pracy pośladka.',
+  'Zbyt duży ciężar wymuszający bujanie biodrem.',
+  'Zginanie kolana roboczej nogi.'
+],
+cwiczysz:['Pośladek średni']},
+
+{id:'d3_4',day:'D3',type:'dol',isCore:false,
+name:'Donkey Kick na wyciągu (Cable Donkey Kick)',muscle:'Pośladek wielki — kąt pracy z klęku',
+link:ytLink('Cable Donkey Kick'),weeks:WC2,
+wskazowki:[
+  'Pozycja klęku podpartego pozwala mocniej odizolować pośladek niż stojące warianty.',
+  'Kolano robocze zgięte pod kątem 90° przez cały ruch — pracuje tylko staw biodrowy.',
+  'Wypychaj stopę w kierunku sufitu, nie do tyłu — to zwiększa aktywację pośladka.',
+  'Plecy w linii neutralnej — nie uginaj ani nie wyginaj odcinka lędźwiowego.'
+],
+instrukcja:[
+  'Zapnij linkę do kostki, przyjmij pozycję klęku podpartego przed wyciągiem.',
+  'Kolano robocze zgięte 90°, miednica neutralna.',
+  'Z wydechem wypchnij stopę w górę, prowadząc ruch biodrem.',
+  'Zatrzymaj 1 sek, mocno zaciskając pośladek.',
+  'Wdech — powoli wróć do pozycji wyjściowej.'
+],
+bledy:[
+  'Wyginanie odcinka lędźwiowego, by "podnieść nogę wyżej" — ogranicz zakres.',
+  'Prostowanie kolana podczas ruchu — zmienia ćwiczenie w coś innego.',
+  'Zbyt duży ciężar wymuszający bujanie tułowiem.'
+],
+cwiczysz:['Pośladek wielki']},
+
+{id:'d3_5',day:'D3',type:'dol',isCore:false,
+name:'Uginanie nóg siedząc na maszynie (Seated Leg Curl)',muscle:'Dwugłowy uda, półścięgnisty, półbłoniasty — inny kąt niż wariant leżący',
+link:ytLink('Seated Leg Curl'),weeks:WC1,
+wskazowki:[
+  'Pozycja siedząca pracuje przy zgiętym biodrze, co daje nieco inny bodziec dla tyłu uda niż wariant leżący z Dnia 1.',
+  'Plecy pełne oparcie, tułów wyprostowany przez cały ruch.',
+  'Wałek górny stabilnie blokuje uda — nie powinny się unosić podczas uginania.',
+  'Pełny zakres ruchu — od pełnego wyprostu do maksymalnego zgięcia.'
+],
+instrukcja:[
+  'Usiądź w maszynie, uda pod górną podkładką, wałek dolny nad stopami.',
+  'Plecy oparte, miednica neutralna.',
+  'Z wydechem ugnij nogi, przyciągając wałek maksymalnie w dół.',
+  'Zatrzymaj 1 sek w dolnej pozycji.',
+  'Wdech — powoli wyprostuj nogi.'
+],
+bledy:[
+  'Unoszenie ud od siedziska — sygnał zbyt dużego ciężaru.',
+  'Zbyt szybki powrót do pozycji wyjściowej.',
+  'Niepełny zakres ruchu.'
+],
+cwiczysz:['Dwugłowy uda','Półścięgnisty']},
+
+{id:'d3_core',day:'D3',type:'core',isCore:true,
+name:'Deska boczna (Side Plank)',muscle:'Mięśnie skośne brzucha, poprzeczny brzucha, pośladek średni (stabilizacja)',
+link:ytLink('Side Plank technika'),weeks:WK,
+wskazowki:[
+  'Ciało tworzy jedną prostą linię od głowy do stóp — biodra nie opadają w dół ani nie unoszą się do góry.',
+  'Łokieć dokładnie pod barkiem — to chroni staw barkowy przy dłuższym utrzymywaniu pozycji.',
+  'Napnij pośladek nogi leżącej na wierzchu — dodatkowo stabilizuje miednicę i angażuje pośladek średni.',
+  'Oddychaj spokojnie przez cały czas trwania — nie wstrzymuj oddechu.'
+],
+instrukcja:[
+  'Połóż się na boku, oprzyj się na przedramieniu, łokieć pod barkiem.',
+  'Stopy złączone lub jedna przed drugą dla stabilizacji.',
+  'Unieś biodra, tworząc prostą linię od głowy do stóp.',
+  'Napnij brzuch i pośladek, utrzymaj pozycję przez zadany czas.',
+  'Kontrolowanie zejdź, zmień stronę.'
+],
+bledy:[
+  'Opadanie bioder w dół — sygnał zmęczenia core, skróć czas utrzymania.',
+  'Unoszenie bioder zbyt wysoko — traci się napięcie mięśni skośnych.',
+  'Łokieć wysunięty przed lub za linię barku — obciąża staw barkowy.'
+],
+cwiczysz:['Mięśnie skośne brzucha','Poprzeczny brzucha']},
+
+{id:'d3_cardio',day:'D3',type:'cardio',isCore:false,
+name:'Stepper / Orbitrek (finisher)',muscle:'Praca tlenowa — wsparcie redukcji tkanki tłuszczowej',
+link:ytLink('trening na orbitreku'),weeks:WD,
+wskazowki:[
+  'Stepper i orbitrek to świetna alternatywa dla bieżni — mniejsze obciążenie stawów, ciągła praca nóg bez elementu uderzeniowego.',
+  'Utrzymuj stałe, umiarkowane tempo przez cały czas trwania — to ćwiczenie wytrzymałościowe, nie interwałowe.',
+  'Wyprostowana sylwetka, delikatne oparcie na poręczach tylko dla równowagi.',
+  'Ten element planu wspiera ogólny deficyt kaloryczny, kluczowy dla redukcji masy ciała.'
+],
+instrukcja:[
+  'Ustaw umiarkowany, stały opór na maszynie.',
+  'Rozpocznij ruch w spokojnym, kontrolowanym tempie.',
+  'Utrzymuj wyprostowaną postawę przez cały czas trwania.',
+  'Kontynuuj przez zaplanowany czas, oddychając spokojnie.'
+],
+bledy:[
+  'Nadmierne opieranie się na poręczach — zmniejsza efektywność spalania kalorii.',
+  'Zbyt intensywne tempo na starcie — lepiej równomiernie przez cały czas.',
+  'Pomijanie tego elementu planu.'
+],
+cwiczysz:['Układ krążeniowo-oddechowy']},
+
+// ━━━━━━━━━━━━━━━━━━━━━━ D4 — GÓRA + CORE (OPCJONALNY) ━━━━━━━━━━━━━━━━━━━━━━
+{id:'d4_1',day:'D4',type:'gora',isCore:false,
+name:'Wyciskanie na maszynie (Chest Press Machine)',muscle:'Piersiowy większy, trójgłowy ramienia',
+link:ytLink('Chest Press Machine'),weeks:WE,
+wskazowki:[
+  'Maszyna prowadzi tor ruchu — idealna dla początkującej, eliminuje potrzebę stabilizacji ciężaru.',
+  'Uchwyty ustaw na wysokości środka klatki piersiowej.',
+  'Plecy i pośladki dociśnięte do oparcia przez cały ruch.',
+  'Nie blokuj łokci całkowicie na końcu ruchu — lekkie ugięcie chroni stawy.'
+],
+instrukcja:[
+  'Usiądź, wyreguluj siedzisko tak, by uchwyty były na wysokości klatki.',
+  'Chwyć uchwyty, ściągnij łopatki.',
+  'Wdech, następnie z wydechem wyciśnij uchwyty do przodu.',
+  'Zatrzymaj chwilę bez blokowania łokci.',
+  'Wdech — powoli wróć do pozycji wyjściowej.'
+],
+bledy:[
+  'Zbyt wysoko ustawione siodełko — barki przejmują pracę klatki.',
+  'Odrywanie pleców od oparcia.',
+  'Pełne, gwałtowne blokowanie łokci.'
+],
+cwiczysz:['Piersiowy większy','Trójgłowy ramienia']},
+
+{id:'d4_2',day:'D4',type:'gora',isCore:false,
+name:'Wiosłowanie siedząc na wyciągu (Seated Cable Row)',muscle:'Najszerszy grzbietu, romboidalny, trapezowy środkowy',
+link:ytLink('Seated Cable Row'),weeks:WE,
+wskazowki:[
+  'Tułów stabilny przez cały ruch — nie kołysz się do przodu i do tyłu, to najczęstszy błąd.',
+  'Ściągaj uchwyt do dolnej części brzucha, łokcie blisko tułowia.',
+  'Na końcu ruchu mocno ściśnij łopatki — to moment peak contraction.',
+  'Kolana lekko ugięte, stopy stabilnie oparte o podpórki.'
+],
+instrukcja:[
+  'Usiądź, stopy na podporach, chwyć uchwyt.',
+  'Tułów wyprostowany, lekko pochylony do przodu w pozycji startowej.',
+  'Z wydechem wiosłuj do brzucha, ściągając łopatki na końcu.',
+  'Zatrzymaj 1 sek.',
+  'Wdech — powoli wróć, pozwalając na pełne rozciągnięcie pleców.'
+],
+bledy:[
+  'Kiwanie tułowiem w przód i tył — ogranicza efektywność i obciąża plecy.',
+  'Łokcie zbyt szeroko — praca przechodzi na barki.',
+  'Brak ściśnięcia łopatek na końcu ruchu.'
+],
+cwiczysz:['Najszerszy grzbietu','Romboidalny']},
+
+{id:'d4_3',day:'D4',type:'gora',isCore:false,
+name:'Wznosy boczne z hantlami (Lateral Raise)',muscle:'Naramienny boczny — szerokość barków',
+link:ytLink('Lateral Raise'),weeks:WF,
+wskazowki:[
+  'Małe hantle wystarczą — to ćwiczenie o krótkiej dźwigni, duży ciężar tylko psuje technikę.',
+  'Unoś ramiona do wysokości barków, nie wyżej — powyżej pracę przejmuje mięsień czworoboczny.',
+  'Prowadź ruch łokciem, jakby ktoś ciągnął Cię za łokcie, nie za dłonie.',
+  'Lekkie ugięcie łokci przez cały ruch, kciuki delikatnie skierowane w dół.'
+],
+instrukcja:[
+  'Stań lub usiądź, hantle po bokach ciała.',
+  'Wdech, następnie z wydechem unieś ramiona na boki do wysokości barków.',
+  'Zatrzymaj chwilę na górze.',
+  'Wdech — powoli opuść ramiona.',
+  'Powtórz w kontrolowanym tempie, bez bujania tułowiem.'
+],
+bledy:[
+  'Bujanie tułowiem, by "podrzucić" ciężar.',
+  'Unoszenie ramion powyżej linii barków.',
+  'Zbyt duży ciężar uniemożliwiający kontrolę.'
+],
+cwiczysz:['Naramienny boczny']},
+
+{id:'d4_core1',day:'D4',type:'core',isCore:true,
+name:'Deska (Plank)',muscle:'Poprzeczny brzucha, prosty brzucha, pośladki (stabilizacja)',
+link:ytLink('Plank technika'),weeks:WG,
+wskazowki:[
+  'Miednica neutralna — nie unoś bioder wysoko ani nie zapadaj się w dolnym odcinku pleców.',
+  'Napnij pośladki i lekko wciągnij brzuch, oddychaj spokojnie przez cały czas trwania.',
+  'Głowa w przedłużeniu kręgosłupa — wzrok skierowany w podłogę, nie do przodu.',
+  'Jakość ważniejsza niż czas — lepiej 20 sek idealnej techniki niż minuta z opadającymi biodrami.'
+],
+instrukcja:[
+  'Połóż się na przedramionach i palcach stóp, łokcie pod barkami.',
+  'Unieś biodra, tworząc prostą linię od głowy do pięt.',
+  'Napnij brzuch i pośladki.',
+  'Oddychaj spokojnie, utrzymując pozycję przez zadany czas.',
+  'Zejdź kontrolowanie po zakończeniu serii.'
+],
+bledy:[
+  'Unoszenie bioder zbyt wysoko.',
+  'Zapadanie się w dolnym odcinku pleców.',
+  'Wstrzymywanie oddechu.'
+],
+cwiczysz:['Poprzeczny brzucha','Prosty brzucha']},
+
+{id:'d4_core2',day:'D4',type:'core',isCore:true,
+name:'Pallof Press na wyciągu',muscle:'Mięśnie skośne brzucha, poprzeczny brzucha — stabilizacja antyrotacyjna',
+link:ytLink('Pallof Press'),weeks:WH,
+wskazowki:[
+  'To ćwiczenie "antyrotacyjne" — core pracuje, powstrzymując rotację, a nie ją wykonując.',
+  'Kręgosłup pozostaje absolutnie nieruchomy — rusza się tylko ruch rąk do przodu i z powrotem.',
+  'Stań bokiem do wyciągu, by ciężarek "ciągnął" Cię w bok — wymusza to pracę mięśni skośnych.',
+  'Wykonaj cały zestaw jedną stroną, zanim zmienisz bok.'
+],
+instrukcja:[
+  'Stań bokiem do wyciągu, chwyć uchwyt oburącz przy klatce.',
+  'Miednica neutralna, kolana lekko ugięte.',
+  'Z wydechem wypchnij ręce przed siebie, utrzymując tułów nieruchomo.',
+  'Zatrzymaj 1-2 sek.',
+  'Wdech — powoli wróć do klatki, wykonaj serię, zmień stronę.'
+],
+bledy:[
+  'Rotacja tułowia w kierunku wyciągu — ćwiczenie traci sens.',
+  'Zbyt duży ciężar uniemożliwiający kontrolę.',
+  'Zbyt szybkie tempo.'
+],
+cwiczysz:['Mięśnie skośne brzucha','Poprzeczny brzucha']}
+];
+
+let CPW=1;
+
+const PM_FIELDS=[
+  {id:'waga',   label:'Waga',                        unit:'kg', icon:'⚖️'},
+  {id:'talia',  label:'Talia',                        unit:'cm', icon:'📏'},
+  {id:'brzuch', label:'Brzuch (wysokość pępka)',      unit:'cm', icon:'📏'},
+  {id:'biodra', label:'Biodra (najszersze miejsce)',  unit:'cm', icon:'📏'},
+  {id:'udo',    label:'Udo (najszersze miejsce)',     unit:'cm', icon:'📏'},
+  {id:'lydka',  label:'Łydka',                        unit:'cm', icon:'📏'},
+];
+
+// ── KEY HELPERS ──
+function sk(id,week,set){return id+'_w'+week+'_s'+set;}
+function pmKey(field,week){return 'pm_'+field+'_w'+week;}
+
+// ── DARK MODE ──
+let DARK=localStorage.getItem('krt6v2_dark')==='1';
+function applyDark(){
+  document.body.classList.toggle('dark',DARK);
+  document.getElementById('dmBtn').textContent=DARK?'☀️':'🌙';
+}
+function toggleDark(){DARK=!DARK;localStorage.setItem('krt6v2_dark',DARK?'1':'0');applyDark();}
+applyDark();
+
+// ── TIMER ──
+let timerSec=0,timerTotal=0,timerInt=null;
+const CIRC=2*Math.PI*88;
+
+function timerStart(secs){
+  timerStop();
+  timerSec=secs; timerTotal=secs;
+  document.getElementById('timerOverlay').classList.add('on');
+  renderTimer();
+  timerInt=setInterval(function(){
+    timerSec--;
+    if(timerSec<=0){
+      timerSec=0; renderTimer(); timerStop();
+      if(navigator.vibrate) navigator.vibrate([200,100,200]);
+      showToast('✅ Czas na serię!');
+    } else { renderTimer(); }
+  },1000);
+}
+
+function renderTimer(){
+  const el=document.getElementById('timerNum');
+  const arc=document.getElementById('timerArc');
+  const m=Math.floor(timerSec/60), s=timerSec%60;
+  el.textContent=(timerSec>0?(m>0?m+':'+(s<10?'0':'')+s:s):'GO!');
+  const pct=timerTotal>0?timerSec/timerTotal:0;
+  arc.style.strokeDashoffset=(CIRC*(1-pct)).toFixed(1);
+  arc.style.stroke=timerSec<=10?'#ef4444':timerSec<=30?'#f59e0b':'var(--bl)';
+}
+
+function timerStop(){
+  clearInterval(timerInt); timerInt=null;
+  document.getElementById('timerOverlay').classList.remove('on');
+}
+
+function timerAdd(s){timerSec+=s;timerTotal=Math.max(timerTotal,timerSec);renderTimer();}
+function timerOverlayClick(e){if(e.target===document.getElementById('timerOverlay'))timerStop();}
+
+function parseRestSecs(restStr){
+  if(!restStr||restStr==='–') return 90;
+  const p=restStr.split(':');
+  if(p.length===2) return parseInt(p[0])*60+parseInt(p[1]);
+  return parseInt(restStr)||90;
+}
+
+// ── LONG PRESS (copy last week) ──
+let lpTimer=null;
+
+function lpStart(exId,sNum,week,e){
+  e.preventDefault();
+  lpTimer=setTimeout(function(){
+    lpTimer=null;
+    copyPrevWeek(exId,sNum,week);
+  },600);
+}
+
+function lpEnd(){
+  if(lpTimer){clearTimeout(lpTimer);lpTimer=null;}
+}
+
+function copyPrevWeek(exId,sNum,week){
+  if(week<=1){showToast('Brak danych z poprzedniego tygodnia');return;}
+  const prev=RES[sk(exId,week-1,sNum)]||{};
+  if(!prev.kg&&!prev.reps){showToast('Brak danych z T'+(week-1));return;}
+  const k=sk(exId,week,sNum);
+  if(!RES[k]) RES[k]={kg:'',reps:'',date:''};
+  if(prev.kg) RES[k].kg=prev.kg;
+  if(prev.reps) RES[k].reps=prev.reps;
+  RES[k].date=new Date().toLocaleDateString('pl-PL');
+  localStorage.setItem('krt6v2',JSON.stringify(RES));
+  patchSetInputs(exId,sNum,week,RES[k]);
+  showToast('📋 Skopiowano z T'+(week-1)+' → T'+week);
+}
+
+function patchSetInputs(exId,sNum,week,data){
+  const container=document.getElementById('dayBlocks');
+  if(!container) return;
+  const spans=container.querySelectorAll('span[ontouchstart]');
+  for(let i=0;i<spans.length;i++){
+    const attr=spans[i].getAttribute('ontouchstart')||'';
+    const re=new RegExp("lpStart\\('"+exId+"',"+sNum+","+week+",");
+    if(re.test(attr)){
+      const row=spans[i].parentElement;
+      const inputs=row.querySelectorAll('input');
+      if(inputs[0]&&data.kg){
+        inputs[0].value=data.kg;
+        inputs[0].classList.add('f');
+      }
+      if(inputs[1]&&data.reps){
+        inputs[1].value=data.reps;
+        inputs[1].classList.add('f');
+      }
+      break;
+    }
+  }
+}
+
+// ── NAV ──
+function nav(id,btn){
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('on'));
+  document.getElementById('s-'+id).classList.add('on');
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  if(id==='progress') rProg();
+  if(id==='dziennik') rPlan();
+  if(id==='pomiary')  rPomiary();
+}
+
+// ── ZNACZNIK "OPCJONALNY" ──
+function optBadge(day){
+  return day.optional?'<span class="badge-opt">Opcjonalny</span>':'';
+}
+
+// ── MODAL ──
+function openMod(id){
+  const e=EX.find(x=>x.id===id);
+  if(!e) return;
+  document.getElementById('mBadge').innerHTML='<span class="'+BM[e.type]+'">'+BL[e.type]+'</span>';
+  document.getElementById('mTitle').textContent=e.name;
+  document.getElementById('mMuscle').textContent='💪 '+e.muscle;
+  document.getElementById('mLink').href=e.link;
+  document.getElementById('tp-w').innerHTML='<div class="tb"><ul style="list-style:none">'+e.wskazowki.map(w=>'<li style="margin-bottom:7px">• '+w+'</li>').join('')+'</ul></div>';
+  document.getElementById('tp-i').innerHTML='<ol class="sl-list">'+e.instrukcja.map(s=>'<li>'+s+'</li>').join('')+'</ol>';
+  document.getElementById('tp-b').innerHTML='<div class="wb"><ul style="list-style:none">'+e.bledy.map(b=>'<li style="margin-bottom:7px">⚠️ '+b+'</li>').join('')+'</ul></div>';
+  document.getElementById('tp-c').innerHTML='<div class="mc-list">'+e.cwiczysz.map(m=>'<span class="mc-chip">'+m+'</span>').join('')+'</div>';
+  document.getElementById('mPlan').innerHTML='<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-top:6px">'+e.weeks.map((w,i)=>'<div style="background:var(--'+WC[i]+'-l);border-radius:var(--r);padding:7px 3px;text-align:center"><div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--'+WC[i]+');margin-bottom:2px">T'+(i+1)+'</div><div style="font-size:12px;font-weight:600">'+w.s+'×'+w.r+'</div><div style="font-size:10px;color:var(--tx3)">'+w.rest+'</div></div>').join('')+'</div>';
+  document.querySelectorAll('.mt button,.tp').forEach((x,i)=>x.classList.toggle('on',i===0||i===4));
+  document.getElementById('MB').classList.add('on');
+  document.body.style.overflow='hidden';
+  document.body.style.position='fixed';
+  document.body.style.width='100%';
+}
+function tab(n,btn){
+  document.querySelectorAll('.mt button').forEach(b=>b.classList.remove('on'));
+  document.querySelectorAll('.tp').forEach(p=>p.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('tp-'+n).classList.add('on');
+}
+function mbClick(e){if(e.target===document.getElementById('MB')) closeMod();}
+function closeMod(){
+  document.getElementById('MB').classList.remove('on');
+  document.body.style.overflow='';
+  document.body.style.position='';
+  document.body.style.width='';
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape') closeMod();});
+
+// ── PLAN READ-ONLY ──
+function swPlan(w,btn){
+  CPW=w;
+  document.querySelectorAll('#s-plan .wb2').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  rPlanReadOnly();
+}
+
+function rPlanReadOnly(){
+  const wi=CPW-1;
+  document.getElementById('planBlocks').innerHTML=DD.map(day=>{
+    const exs=EX.filter(e=>e.day===day.id);
+    const main=exs.filter(e=>!e.isCore&&e.type!=='cardio');
+    const ord=[...main,...exs.filter(e=>e.isCore),...exs.filter(e=>e.type==='cardio')];
+    const tot=main.reduce((s,e)=>s+(parseInt(e.weeks[wi].s)||0),0);
+    const rows=ord.map((e,idx)=>{
+      const wk=e.weeks[wi];
+      const cls=e.isCore?'rc':e.type==='cardio'?'rd':'';
+      return '<tr class="'+cls+'"><td style="width:22px;text-align:center;font-size:11px;color:var(--tx3)">'+(idx+1)+'</td>'
+        +'<td><div class="el" onclick="openMod(\''+e.id+'\')">'+e.name+' <span class="eli">↗</span></div></td>'
+        +'<td style="font-weight:600;white-space:nowrap">'+wk.s+'×'+wk.r+'</td>'
+        +'<td class="mbh-plan" style="font-size:11px;color:var(--tx3);white-space:nowrap">'+wk.rest+'</td></tr>';
+    }).join('');
+    return '<div class="db" id="pb-'+day.id+'">'
+      +'<div class="dbh" onclick="togP(\''+day.id+'\')">'
+      +'<div class="di '+day.ic+'">'+day.icon+'</div>'
+      +'<div style="flex:1"><div class="dt">'+day.label+optBadge(day)+'</div>'
+      +'<div class="dm">'+main.length+' ćwiczeń · '+tot+' serii · T'+CPW+'</div></div>'
+      +'<span class="dc">›</span></div>'
+      +'<div class="dbd"><div class="pt"><table class="plan">'
+      +'<thead><tr><th>#</th><th>Ćwiczenie</th><th>S×P</th><th class="mbh-plan">Przerwa</th></tr></thead>'
+      +'<tbody>'+rows+'</tbody></table></div></div></div>';
+  }).join('');
+}
+
+function togP(id){
+  const b=document.getElementById('pb-'+id);
+  b.classList.toggle('open');
+  b.querySelector('.dc').style.transform=b.classList.contains('open')?'rotate(90deg)':'';
+}
+
+// ── DZIENNIK (PER-SET LOGGING) ──
+function sw(w,btn){
+  CW=w;
+  document.querySelectorAll('#s-dziennik .wb2').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('hW').textContent='T'+w;
+  rPlan();
+}
+
+function rPlan(){
+  const openIds=new Set();
+  document.querySelectorAll('#dayBlocks .db.open').forEach(el=>openIds.add(el.id));
+  const scrollY=window.scrollY;
+
+  const wi=CW-1;
+  document.getElementById('dayBlocks').innerHTML=DD.map(day=>{
+    const exs=EX.filter(e=>e.day===day.id);
+    const main=exs.filter(e=>!e.isCore&&e.type!=='cardio');
+    const ord=[...main,...exs.filter(e=>e.isCore),...exs.filter(e=>e.type==='cardio')];
+    const tot=main.reduce((s,e)=>s+(parseInt(e.weeks[wi].s)||0),0);
+
+    const cards=ord.map(e=>{
+      const wk=e.weeks[wi];
+      if(e.isCore||e.type==='cardio'){
+        const bgClass=e.isCore?'dj-core-bg':'dj-card-bg';
+        const bgStyle=e.isCore?'background:var(--gr-l)':'background:var(--pu-l)';
+        return '<div class="'+bgClass+'" style="padding:.75rem 1rem;border-bottom:1px solid var(--bd);'+bgStyle+';display:flex;align-items:center;justify-content:space-between;gap:8px">'
+          +'<div><div class="el" style="font-size:13px" onclick="openMod(\''+e.id+'\')">'+e.name+' <span class="eli">↗</span></div>'
+          +'<div style="font-size:11px;color:var(--tx3);margin-top:2px">'+wk.s+'×'+wk.r+(wk.rest!=='–'?' · ⏱'+wk.rest:'')+'</div></div></div>';
+      }
+      const nSets=parseInt(wk.s)||1;
+      const restSecs=parseRestSecs(wk.rest);
+      let setInputs='';
+      for(let i=0;i<nSets;i++){
+        const sNum=i+1;
+        const k=sk(e.id,CW,sNum);
+        const sv=RES[k]||{};
+        setInputs+='<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--sf2)">'
+          +'<span style="font-size:11px;font-weight:700;color:var(--bl);background:var(--bl-l);padding:2px 7px;border-radius:999px;min-width:28px;text-align:center;flex-shrink:0;cursor:pointer;user-select:none;-webkit-user-select:none"'
+          +' ontouchstart="lpStart(\''+e.id+'\','+sNum+','+CW+',event)" ontouchend="lpEnd()" ontouchcancel="lpEnd()"'
+          +' onmousedown="lpStart(\''+e.id+'\','+sNum+','+CW+',event)" onmouseup="lpEnd()" onmouseleave="lpEnd()"'
+          +' title="Przytrzymaj aby skopiować z poprzedniego tygodnia">S'+sNum+'</span>'
+          +'<div class="ri" style="flex:1;min-width:0">'
+          +'<input class="r-inp'+(sv.kg?' f':'')+'" type="text" inputmode="decimal" pattern="[0-9]*[.,]?[0-9]*" placeholder="kg" value="'+(sv.kg||'')+'" style="width:100%" onblur="saveKg(\''+e.id+'\','+CW+','+sNum+',this)" oninput="this.classList.toggle(\'f\',this.value.length>0)"><span class="ru">kg</span></div>'
+          +'<div class="ri" style="flex:1;min-width:0"><input class="r-inp'+(sv.reps?' f':'')+'" type="number" min="0" step="1" inputmode="numeric" placeholder="'+wk.r+'" value="'+(sv.reps||'')+'" style="width:100%" onchange="saveS(\''+e.id+'\','+CW+','+sNum+',\'reps\',this)"><span class="ru">×</span></div>'
+          +'<button class="tmr-btn" onclick="timerStart('+restSecs+')" title="Start timera przerwy">⏱</button>'
+          +'</div>';
+      }
+      return '<div style="border-bottom:1px solid var(--bd);padding:.75rem 1rem">'
+        +'<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:6px">'
+        +'<div><div class="el" style="font-size:13px" onclick="openMod(\''+e.id+'\')">'+e.name+' <span class="eli">↗</span></div>'
+        +'<div style="font-size:11px;color:var(--tx3);margin-top:2px">'+nSets+' serie · '+wk.r+' powt. · ⏱'+wk.rest+'</div>'
+        +'<div class="lp-hint">Przytrzymaj pole kg aby skopiować z poprzedniego tygodnia</div></div></div>'
+        +setInputs+'</div>';
+    }).join('');
+
+    return '<div class="db" id="b-'+day.id+'">'
+      +'<div class="dbh" onclick="tog(\''+day.id+'\')">'
+      +'<div class="di '+day.ic+'">'+day.icon+'</div>'
+      +'<div style="flex:1"><div class="dt">'+day.label+optBadge(day)+'</div>'
+      +'<div class="dm">'+main.length+' ćwiczeń · '+tot+' serii · T'+CW+'</div></div>'
+      +'<span class="dc">›</span></div>'
+      +'<div class="dbd">'+cards+'</div></div>';
+  }).join('');
+  openIds.forEach(function(id){
+    const el=document.getElementById(id);
+    if(el){
+      el.classList.add('open');
+      const dc=el.querySelector('.dc');
+      if(dc) dc.style.transform='rotate(90deg)';
+    }
+  });
+  window.scrollTo({top:scrollY,behavior:'instant'});
+}
+
+function tog(id){
+  const b=document.getElementById('b-'+id);
+  b.classList.toggle('open');
+  b.querySelector('.dc').style.transform=b.classList.contains('open')?'rotate(90deg)':'';
+}
+
+// ── SAVE ──
+function saveKg(id,week,setNum,inp){
+  const raw=inp.value.replace(',','.');
+  const num=parseFloat(raw);
+  if(inp.value!==''&&isNaN(num)){inp.value='';inp.classList.remove('f');return;}
+  const val=isNaN(num)?'':String(Math.round(num*100)/100);
+  inp.value=val;
+  inp.classList.toggle('f',!!val);
+  const k=sk(id,week,setNum);
+  if(!RES[k]) RES[k]={kg:'',reps:'',date:''};
+  RES[k].kg=val;
+  RES[k].date=new Date().toLocaleDateString('pl-PL');
+  localStorage.setItem('krt6v2',JSON.stringify(RES));
+  showToast('💾 S'+setNum+' · T'+week);
+}
+
+function saveS(id,week,setNum,field,inp){
+  const k=sk(id,week,setNum);
+  if(!RES[k]) RES[k]={kg:'',reps:'',date:''};
+  RES[k][field]=inp.value;
+  RES[k].date=new Date().toLocaleDateString('pl-PL');
+  inp.classList.toggle('f',!!inp.value);
+  localStorage.setItem('krt6v2',JSON.stringify(RES));
+  showToast('💾 S'+setNum+' · T'+week);
+}
+
+function savePm(field,week,inp){
+  const k=pmKey(field,week);
+  const val=inp.value;
+  if(val){
+    RES[k]={val:val,date:new Date().toLocaleDateString('pl-PL')};
+  } else {
+    delete RES[k];
+  }
+  inp.classList.toggle('f',!!val);
+  localStorage.setItem('krt6v2',JSON.stringify(RES));
+  showToast('💾 Pomiar T'+week);
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('on');
+  clearTimeout(t._t);
+  t._t=setTimeout(function(){t.classList.remove('on');},1800);
+}
+
+// ── WEEK BEST (for progress) ──
+function weekBest(id,week){
+  const ex=EX.find(e=>e.id===id);
+  if(!ex) return {maxKg:null,reps:null,filled:false};
+  const n=parseInt(ex.weeks[week-1].s)||1;
+  let maxKg=null,totalReps=0,filled=false;
+  for(let i=1;i<=n;i++){
+    const r=RES[sk(id,week,i)]||{};
+    if(r.kg||r.reps) filled=true;
+    const kg=parseFloat(r.kg);
+    const rp=parseInt(r.reps)||0;
+    if(!isNaN(kg)&&kg>0){
+      if(maxKg===null||kg>maxKg) maxKg=kg;
+      totalReps+=rp;
+    }
+  }
+  return {maxKg:maxKg,reps:totalReps||null,filled:filled};
+}
+
+// ── PROGRESS v2 ──
+function rProg(){
+  updStats();
+  const main=EX.filter(function(e){return !e.isCore&&e.type!=='cardio';});
+
+  document.getElementById('progContent').innerHTML=DD.map(function(day){
+    const exs=main.filter(function(e){return e.day===day.id;});
+    if(!exs.length) return '';
+
+    const filledCount=exs.filter(function(e){
+      for(var w=1;w<=5;w++){const wb=weekBest(e.id,w);if(wb.filled)return true;}
+      return false;
+    }).length;
+
+    const exerciseBlocks=exs.map(function(e,idx){
+      const weeks=[1,2,3,4,5].map(function(w){
+        const wb=weekBest(e.id,w);
+        const prev=w>1?weekBest(e.id,w-1):{maxKg:null,reps:null,filled:false};
+        const ex2=EX.find(function(x){return x.id===e.id;});
+        const nSets=ex2?parseInt(ex2.weeks[w-1].s)||1:1;
+        const setRows=[];
+        for(var i=1;i<=nSets;i++){
+          const r=RES[sk(e.id,w,i)]||{};
+          const rp=w>1?RES[sk(e.id,w-1,i)]||{}:{};
+          setRows.push({s:i,r:r,rp:rp,hasData:!!(r.kg||r.reps)});
+        }
+        let delta=null,deltaDir='eq';
+        if(wb.maxKg!==null&&prev.maxKg!==null){
+          delta=wb.maxKg-prev.maxKg;
+          deltaDir=delta>0?'up':delta<0?'dn':'eq';
+        }
+        return {w:w,wb:wb,prev:prev,delta:delta,deltaDir:deltaDir,nSets:nSets,setRows:setRows};
+      });
+
+      let lastFilled=null;
+      for(var w=5;w>=1;w--){if(weeks[w-1].wb.filled){lastFilled=weeks[w-1];break;}}
+      let headerBadge='';
+      if(lastFilled&&lastFilled.delta!==null){
+        headerBadge='<span class="prg-ex-badge '+lastFilled.deltaDir+'">'+
+          (lastFilled.deltaDir==='up'?'↑ ':lastFilled.deltaDir==='dn'?'↓ ':'→ ')+
+          Math.abs(lastFilled.delta).toFixed(Math.abs(lastFilled.delta)%1===0?0:1).replace(/\.0$/,'')+' kg</span>';
+      } else if(!lastFilled){
+        headerBadge='<span class="prg-ex-badge none">Brak danych</span>';
+      }
+
+      const weekRows=weeks.map(function(wk){
+        const isHalf=wk.w===3;
+        const noData=!wk.wb.filled;
+        let deltaHtml='';
+        if(wk.delta!==null){
+          const absDelta=Math.abs(wk.delta);
+          const formatted=(wk.delta>0?'+':'')+wk.delta.toFixed(absDelta%1===0?0:1).replace(/\.0$/,'')+'&thinsp;kg';
+          deltaHtml='<span class="prg-week-delta '+wk.deltaDir+'">'+formatted+'</span>';
+        } else {
+          deltaHtml='<span class="prg-week-delta eq">—</span>';
+        }
+        const setsHtml=wk.setRows.map(function(sr){
+          if(!sr.hasData) return '';
+          let diff='';
+          if(sr.r.kg&&sr.rp.kg){
+            const d=parseFloat(sr.r.kg)-parseFloat(sr.rp.kg);
+            if(!isNaN(d)&&d!==0){
+              diff='<span style="font-size:10px;color:'+(d>0?'var(--gr)':'var(--ro)')+';">'+(d>0?'+':'')+d.toFixed(d%1===0?0:1).replace(/\.0$/,'')+'</span>';
+            }
+          }
+          return '<span style="font-size:11px;color:var(--tx2);margin-right:6px">S'+sr.s+': '+(sr.r.kg?sr.r.kg+' kg':'–')
+            +diff+(sr.r.reps?' ×'+sr.r.reps:'')+'</span>';
+        }).join('');
+
+        return '<tr class="'+(isHalf?'half-break':'')+(noData?' no-data':'')+'">'+
+          '<td class="prg-week-label">T'+wk.w+'</td>'+
+          '<td>'+
+            '<div class="prg-week-main">'+(wk.wb.maxKg!==null?wk.wb.maxKg+' kg':'—')+'</div>'+
+            (setsHtml?'<div style="margin-top:2px">'+setsHtml+'</div>':'')+
+          '</td>'+
+          '<td class="prg-week-reps">'+(wk.wb.reps?'×'+wk.wb.reps:'')+'</td>'+
+          '<td>'+deltaHtml+'</td>'+
+          '</tr>';
+      }).join('');
+
+      const uid='prg2-'+e.id;
+      return '<div class="prg-ex-block" id="'+uid+'">'
+        +'<div class="prg-ex-header" onclick="togPrgEx(\''+uid+'\')">'
+        +'<div class="prg-ex-name">'+e.name+'</div>'
+        +headerBadge
+        +'<span class="prg-chevron">›</span>'
+        +'</div>'
+        +'<div class="prg-ex-body">'
+        +'<table class="prg-week-table">'+weekRows+'</table>'
+        +'</div></div>';
+    }).join('');
+
+    return '<div class="db" id="prg-'+day.id+'" style="margin-bottom:14px">'
+      +'<div class="dbh" onclick="togPrg(\''+day.id+'\')">'
+      +'<div class="di '+day.ic+'">'+day.icon+'</div>'
+      +'<div style="flex:1"><div class="dt">'+day.label+optBadge(day)+'</div>'
+      +'<div class="dm">'+exs.length+' ćwiczeń'+(filledCount?' · '+filledCount+' z danymi':'')+'</div></div>'
+      +'<span class="dc">›</span></div>'
+      +'<div class="dbd" style="padding:.875rem">'+exerciseBlocks+'</div></div>';
+  }).join('');
+}
+
+function togPrgEx(uid){
+  const b=document.getElementById(uid);
+  b.classList.toggle('open');
+}
+
+function togPrg(id){
+  const b=document.getElementById('prg-'+id);
+  b.classList.toggle('open');
+  b.querySelector('.dc').style.transform=b.classList.contains('open')?'rotate(90deg)':'';
+}
+
+function updStats(){
+  const wsSet=new Set();
+  Object.keys(RES).forEach(function(k){const m=k.match(/_w(\d+)_s/);if(m)wsSet.add(m[1]);});
+  document.getElementById('sW').textContent=wsSet.size||'–';
+  const ds=Object.values(RES).map(function(r){return r&&r.date?r.date:null;}).filter(Boolean);
+  document.getElementById('sD').textContent=ds.length?ds[ds.length-1]:'–';
+}
+
+function clrAll(){
+  if(!confirm('Wyczyścić wszystkie wyniki?')) return;
+  Object.keys(RES).forEach(function(k){delete RES[k];});
+  localStorage.removeItem('krt6v2');
+  rProg();rPlan();showToast('🗑 Wyczyszczono');
+}
+
+function expCSV(){
+  let c='\uFEFFĆwiczenie,Dzień,Tydzień,Seria,Ciężar (kg),Powtórzenia,Data\n';
+  EX.forEach(function(e){
+    if(e.isCore||e.type==='cardio') return;
+    for(let w=1;w<=5;w++){
+      const n=parseInt(e.weeks[w-1].s)||1;
+      for(let s=1;s<=n;s++){
+        const k=sk(e.id,w,s),r=RES[k];
+        if(r&&(r.kg||r.reps)) c+='"'+e.name+'","'+e.day+'","T'+w+'","S'+s+'","'+(r.kg||'')+'","'+(r.reps||'')+'","'+(r.date||'')+'"\n';
+      }
+    }
+  });
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([c],{type:'text/csv;charset=utf-8;'}));
+  a.download='KrzempiK_Trening_v2.csv';a.click();
+  showToast('📥 CSV gotowy');
+}
+
+function expJSON(){
+  const payload={krt6v2:RES,exportedAt:new Date().toISOString(),version:'krt6v2'};
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  const d=new Date();
+  a.download='KrzempiK_Trening_v2_'+d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0')+'.json';
+  a.click();
+  showToast('✅ Dane wyeksportowane');
+}
+
+function impJSON(){
+  document.getElementById('jsonFileInput').value='';
+  document.getElementById('jsonFileInput').click();
+}
+
+function loadJSONFile(ev){
+  const file=ev.target.files[0];
+  if(!file) return;
+  const reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      const obj=JSON.parse(e.target.result);
+      const data=obj.krt6v2||obj.krt6||obj;
+      if(typeof data!=='object'||Array.isArray(data)) throw new Error('Nieprawidłowy format');
+      if(!confirm('Wczytać dane z pliku? Zastąpią obecne wyniki.')) return;
+      Object.keys(RES).forEach(function(k){delete RES[k];});
+      Object.keys(data).forEach(function(k){RES[k]=data[k];});
+      localStorage.setItem('krt6v2',JSON.stringify(RES));
+      rProg();rPlan();
+      showToast('✅ Dane wczytane pomyślnie');
+    }catch(err){
+      alert('Błąd wczytywania pliku:\n'+err.message);
+    }
+  };
+  reader.readAsText(file);
+}
+
+// ── POMIARY ──
+function rPomiary(){
+  document.getElementById('pomiaBlocks').innerHTML=PM_FIELDS.map(function(f){
+    const weekCols=[1,2,3,4,5].map(function(w){
+      const r=RES[pmKey(f.id,w)]||{};
+      const hasVal=!!r.val;
+      let tr='';
+      if(w>1){
+        const pr=RES[pmKey(f.id,w-1)]||{};
+        if(r.val&&pr.val){
+          const d=parseFloat(r.val)-parseFloat(pr.val);
+          if(!isNaN(d)) tr=d>0?'<span class="tu">↑</span>':d<0?'<span class="td2">↓</span>':'<span style="color:var(--tx3)">→</span>';
+        }
+      }
+      return '<div style="flex:1;min-width:0;text-align:center">'
+        +'<div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--tx3);letter-spacing:.04em;margin-bottom:4px">T'+w+'</div>'
+        +'<div style="position:relative">'
+        +'<input type="number" min="0" step="'+(f.unit==='kg'?'0.1':'0.5')+'" inputmode="decimal"'
+        +' placeholder="–" value="'+(r.val||'')+'"'
+        +' class="r-inp'+(hasVal?' f':'')+'"'
+        +' style="width:100%;text-align:center;padding:7px 2px;font-size:14px"'
+        +' onchange="savePm(\''+f.id+'\','+w+',this)">'
+        +(tr?'<span style="position:absolute;top:1px;right:2px;font-size:10px">'+tr+'</span>':'')
+        +'</div>'
+        +'<div style="font-size:10px;color:var(--tx3);margin-top:2px">'+f.unit+'</div></div>';
+    }).join('');
+
+    const summary=[1,2,3,4,5].map(function(w){
+      const r=RES[pmKey(f.id,w)];
+      return r?'T'+w+': '+r.val+' '+f.unit:null;
+    }).filter(Boolean).join(' · ')||'Brak danych';
+
+    return '<div class="db" id="pm-'+f.id+'">'
+      +'<div class="dbh" onclick="togPm(\''+f.id+'\')">'
+      +'<div class="di push" style="font-size:20px">'+f.icon+'</div>'
+      +'<div style="flex:1"><div class="dt">'+f.label+'</div>'
+      +'<div class="dm">'+summary+'</div></div>'
+      +'<span class="dc">›</span></div>'
+      +'<div class="dbd" style="padding:1rem">'
+      +'<div style="display:flex;gap:6px">'+weekCols+'</div>'
+      +'</div></div>';
+  }).join('');
+}
+
+function togPm(id){
+  const b=document.getElementById('pm-'+id);
+  b.classList.toggle('open');
+  b.querySelector('.dc').style.transform=b.classList.contains('open')?'rotate(90deg)':'';
+}
+
+// ── INIT ──
+rPlanReadOnly();
+rPlan();
+updStats();
+
+// ── SERVICE WORKER REGISTRATION ──
+if('serviceWorker' in navigator){
+  window.addEventListener('load',function(){
+    navigator.serviceWorker.register('sw.js').then(function(reg){
+      console.log('[Alicja Trening] SW zarejestrowany, scope:',reg.scope);
+    }).catch(function(err){
+      console.warn('[Alicja Trening] SW – błąd rejestracji (to normalne, jeśli plik sw.js nie jest hostowany):',err);
+    });
+  });
+}
+</script>
+</body>
+</html>
