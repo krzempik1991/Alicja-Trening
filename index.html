@@ -402,6 +402,8 @@ const WI=[{s:'3',r:'8/str.',rest:'1:00'},{s:'3',r:'10/str.',rest:'1:00'},{s:'3',
 const WJ=[{s:'3',r:'15',rest:'0:45'},{s:'3',r:'18',rest:'0:45'},{s:'3',r:'20',rest:'0:45'},{s:'4',r:'15',rest:'0:45'},{s:'2',r:'15',rest:'0:45'}];
 // K: deska boczna, czas, jednostronna
 const WK=[{s:'2',r:'20s/str.',rest:'1:00'},{s:'2',r:'25s/str.',rest:'1:00'},{s:'3',r:'25s/str.',rest:'1:00'},{s:'3',r:'30s/str.',rest:'1:00'},{s:'2',r:'20s/str.',rest:'1:00'}];
+// L: izolacja ramion (biceps/triceps) — lekki ciężar, wykończeniowo
+const WL=[{s:'3',r:'15',rest:'1:00'},{s:'3',r:'15',rest:'1:00'},{s:'3',r:'12',rest:'1:00'},{s:'4',r:'12',rest:'1:00'},{s:'2',r:'15',rest:'0:45'}];
 
 const EX = [
 // ━━━━━━━━━━━━━━━━━━━━━━ D1 — DÓŁ (PEWNY) ━━━━━━━━━━━━━━━━━━━━━━
@@ -681,6 +683,29 @@ bledy:[
 ],
 cwiczysz:['Tylny naramienny','Mięśnie międzyłopatkowe']},
 
+{id:'d2_biceps',day:'D2',type:'gora',isCore:false,
+name:'Uginanie ramion z hantlami (Dumbbell Bicep Curl)',muscle:'Dwugłowy ramienia, mięsień ramienny, mięsień ramienno-promieniowy',
+link:ytLink('Dumbbell Bicep Curl technika'),weeks:WL,
+wskazowki:[
+  'Łokcie przy tułowiu przez cały ruch — to punkt obrotu, nie powinny wędrować do przodu ani do tyłu.',
+  'Pełny zakres: od całkowitego wyprostu ramienia do pełnego zgięcia — połowiczne powtórzenia dają połowiczny efekt.',
+  'Delikatna supinacja nadgarstka (obrót kciukiem na zewnątrz) w górnej fazie mocniej angażuje biceps.',
+  'Mały ciężar, pełna kontrola — to ćwiczenie wykończeniowe, nie siłowe.'
+],
+instrukcja:[
+  'Stań lub usiądź, hantle po bokach ciała, dłonie skierowane do przodu lub do siebie.',
+  'Łokcie blisko tułowia przez cały ruch.',
+  'Z wydechem ugnij ramiona, unosząc hantle ku barkom.',
+  'Zatrzymaj 1 sek w górnej pozycji, delikatnie napinając biceps.',
+  'Wdech — powoli opuść hantle do pełnego wyprostu.'
+],
+bledy:[
+  'Bujanie tułowiem, by "podrzucić" ciężar — sygnał zbyt dużego obciążenia.',
+  'Łokcie odjeżdżające do tyłu — angażuje barki zamiast bicepsa.',
+  'Niepełny zakres ruchu, szczególnie brak pełnego wyprostu na dole.'
+],
+cwiczysz:['Dwugłowy ramienia','Mięsień ramienny']},
+
 {id:'d2_core',day:'D2',type:'core',isCore:true,
 name:'Brzuszki na macie (Crunches)',muscle:'Prosty brzucha (górna część)',
 link:ytLink('Crunches technika wykonania'),weeks:WJ,
@@ -934,6 +959,29 @@ bledy:[
   'Zbyt duży ciężar uniemożliwiający kontrolę.'
 ],
 cwiczysz:['Naramienny boczny']},
+
+{id:'d4_triceps',day:'D4',type:'gora',isCore:false,
+name:'Triceps Pushdown na wyciągu (Cable Triceps Pushdown)',muscle:'Trójgłowy ramienia (wszystkie głowy)',
+link:ytLink('Triceps Pushdown technika'),weeks:WL,
+wskazowki:[
+  'Łokcie przyklejone do tułowia przez cały ruch — pracuje tylko staw łokciowy, nie bark.',
+  'Pełne wyprostowanie ramienia na dole, z krótkim zatrzymaniem i napięciem trójgłowego.',
+  'Lekkie pochylenie tułowia do przodu (10°) daje stabilną pozycję, bez obciążania pleców.',
+  'Kontrolowany powrót (2 sek) — nie pozwól, by uchwyt "wystrzelił" w górę.'
+],
+instrukcja:[
+  'Stań przodem do wyciągu górnego, chwyć uchwyt prosty lub linę.',
+  'Łokcie przy tułowiu, lekki wykrok jednej nogi dla stabilizacji.',
+  'Z wydechem prostuj ramiona w dół do pełnego wyprostu.',
+  'Zatrzymaj 1 sek z napiętym trójgłowym.',
+  'Wdech — powoli wróć do kąta ok. 90° w łokciu.'
+],
+bledy:[
+  'Łokcie odrywają się od tułowia — inne mięśnie przejmują ruch.',
+  'Bujanie tułowiem, by pomóc sobie przy zbyt dużym ciężarze.',
+  'Niepełne wyprostowanie ramienia na dole — traci się kluczową fazę ruchu.'
+],
+cwiczysz:['Trójgłowy ramienia']},
 
 {id:'d4_core1',day:'D4',type:'core',isCore:true,
 name:'Deska (Plank)',muscle:'Poprzeczny brzucha, prosty brzucha, pośladki (stabilizacja)',
