@@ -236,13 +236,64 @@ body.dark .dj-card-bg{background:#1a1030!important;color:var(--tx)}
 .prg-day-hd:active{background:var(--sf2)}
 html{overscroll-behavior:none}
 .md,.dbd,.pt,.ws,.mt{overscroll-behavior:contain}
+
+/* ── STRETCH SECTION ── */
+.str-day { margin-bottom: 1.5rem; }
+.str-phase {
+  display: flex; align-items: center; gap: 0.5rem;
+  font-size: 11px; font-weight: 700; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--tx2);
+  margin: 1.25rem 0 0.6rem; padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--bd);
+}
+.str-phase-icon { font-size: 16px; }
+.str-card {
+  background: var(--sf); border: 1px solid var(--bd);
+  border-radius: var(--r); padding: 0.9rem 1rem;
+  margin-bottom: 0.6rem; cursor: pointer;
+  transition: border-color .15s;
+}
+.str-card:active { border-color: var(--bl); }
+.str-card-top {
+  display: flex; align-items: flex-start;
+  justify-content: space-between; gap: 0.75rem;
+}
+.str-card-left { flex: 1; }
+.str-card-name {
+  font-size: 14px; font-weight: 600; color: var(--tx);
+  line-height: 1.35; margin-bottom: 3px;
+}
+.str-card-meta {
+  font-size: 12px; color: var(--tx2); margin-top: 2px;
+}
+.str-equip {
+  font-size: 10px; font-weight: 600; padding: 2px 7px;
+  border-radius: 20px; white-space: nowrap; flex-shrink: 0;
+}
+.str-equip.roller { background: #dbeafe; color: #1e40af; }
+.str-equip.ball   { background: #fef3c7; color: #92400e; }
+.str-equip.static { background: #dcfce7; color: #166534; }
+.str-equip.band   { background: #f3e8ff; color: #6b21a8; }
+.str-card-desc {
+  display: none; font-size: 13px; color: var(--tx2);
+  line-height: 1.6; margin-top: 0.75rem; padding-top: 0.75rem;
+  border-top: 1px solid var(--bd);
+}
+.str-card-desc.open { display: block; }
+.str-yt-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  margin-top: 0.75rem; padding: 6px 14px;
+  background: var(--bl); color: #fff; border: none;
+  border-radius: 20px; font-size: 12px; font-weight: 600;
+  cursor: pointer; text-decoration: none;
+}
 </style>
 </head>
 <body>
 <div class="hd">
   <div class="logo">Alicja <s>Trening</s></div>
   <nav>
-    <button class="nb on" onclick="nav('plan',this)">Plan</button>
+    <button class="nb on" onclick="nav('stretch',this)">Rozciąganie</button>
     <button class="nb" onclick="nav('dziennik',this)">Dziennik</button>
     <button class="nb" onclick="nav('progress',this)">Postępy</button>
     <button class="nb" onclick="nav('pomiary',this)">Pomiary</button>
@@ -255,19 +306,18 @@ html{overscroll-behavior:none}
 
 <div class="main">
 
-<!-- PLAN -->
-<div class="sec on" id="s-plan">
+<!-- ROZCIĄGANIE -->
+<div class="sec on" id="s-stretch">
   <div class="ph">
-    <h2>Plan Treningowy</h2>
+    <h2>Rozciąganie</h2>
     <div class="ws">
-      <button class="wb2 on" onclick="swPlan(1,this)">T1</button>
-      <button class="wb2" onclick="swPlan(2,this)">T2</button>
-      <button class="wb2" onclick="swPlan(3,this)">T3</button>
-      <button class="wb2" onclick="swPlan(4,this)">T4</button>
-      <button class="wb2" onclick="swPlan(5,this)">T5</button>
+      <button class="wb2 on" onclick="swStretch('D1',this)">D1 Dół</button>
+      <button class="wb2" onclick="swStretch('D2',this)">D2 Góra</button>
+      <button class="wb2" onclick="swStretch('D3',this)">D3 Dół</button>
+      <button class="wb2" onclick="swStretch('D4',this)">D4 Góra</button>
     </div>
   </div>
-  <div class="db-wrap" id="planBlocks"></div>
+  <div id="stretchBlocks"></div>
 </div>
 
 <!-- DZIENNIK -->
@@ -371,11 +421,212 @@ const WC=['blue','blue','green','green','orange'];
 let CW=1;
 
 const RES=(function(){
-  const s=localStorage.getItem('krt6v2');
+  const s=localStorage.getItem('krt6v3');
   return s?JSON.parse(s):{};
 })();
 
 function ytLink(name){return 'https://www.youtube.com/results?search_query='+encodeURIComponent(name+' technika wykonania');}
+
+// ── ROZCIĄGANIE ─────────────────────────────────────────────
+var curStretchDay = 'D1';
+var equipLabels = {roller:'🔵 Roller', ball:'🟡 Piłka', static:'🟢 Statyczne', band:'🟣 Guma'};
+
+var STRETCH = {
+D1: {
+  label: 'Dół (Pewny) — pośladki, dwugłowe uda, czworogłowe',
+  phases: [
+    {
+      name: 'Roller & Piłka', icon: '🔵',
+      items: [
+        {name:'Roller na pośladku', equip:'roller', dur:'45 sek/stronę',
+         desc:'Usiądź na rollerze, jedną kostkę oprzyj na kolanie drugiej nogi (pozycja "figura 4"). Przechyl ciężar w stronę pośladka, który chcesz rozluźnić. Powoli rolluj w małym zakresie, szukając napiętych punktów, zatrzymaj nacisk na 10-15 sek na każdym z nich.',
+         link:ytLink('Roller na pośladku foam rolling glute')},
+        {name:'Roller na dwugłowym uda (hamstrings)', equip:'roller', dur:'60 sek/nogę',
+         desc:'Usiądź na rollerze, jedna noga wyprostowana na rollerze, druga stopa na podłodze dla kontroli nacisku. Powoli rolluj od pośladka do dołu kolana, zatrzymując się na napiętych miejscach. Po dniu z Hip Thrustem i RDL to tu najczęściej gromadzi się napięcie.',
+         link:ytLink('Roller na hamstringi tył uda')}
+      ]
+    },
+    {
+      name: 'Rozciąganie statyczne', icon: '🟢',
+      items: [
+        {name:'Figure-4 Stretch — pośladek leżąc', equip:'static', dur:'2×40 sek/stronę',
+         desc:'Leż na plecach, jedna noga ugięta, kostkę drugiej nogi połóż na jej udzie. Chwyć udo nogi dolnej oburącz i przyciągnij ku klatce. Im bliżej klatki, tym intensywniejsze rozciągnięcie pośladka wielkiego — głównego mięśnia pracującego w Hip Thrust.',
+         link:ytLink('Figure 4 stretch pośladek leżąc')},
+        {name:'Standing Hamstring Stretch przy krześle', equip:'static', dur:'2×30 sek/stronę',
+         desc:'Postaw piętę na niskim podwyższeniu (krzesło, stopień), noga wyprostowana, plecy proste. Pochyl się od bioder do przodu, aż poczujesz rozciąganie tyłu uda. Nie zaokrąglaj pleców — ruch pochodzi ze stawu biodrowego.',
+         link:ytLink('Standing Hamstring Stretch')},
+        {name:'Hip Flexor Stretch w klęku', equip:'static', dur:'2×30 sek/stronę',
+         desc:'Klęk jednonóż — jedno kolano na macie, druga noga z przodu pod kątem 90°. Przesuń biodro do przodu, utrzymując miednicę neutralną (bez wyginania pleców). Poczujesz rozciąganie w przedniej części biodra tylnej nogi — to mięsień, który mocno pracuje przy Hip Thrust i wykrokach.',
+         link:ytLink('Hip Flexor Stretch klęk')}
+      ]
+    },
+    {
+      name: 'Gumy oporowe', icon: '🟣',
+      items: [
+        {name:'Band Lateral Walk — aktywacja/rozluźnienie pośladka średniego', equip:'band', dur:'2×12 kroków/stronę',
+         desc:'Załóż gumę tuż nad kolanami, przysiad lekko ugięty, tułów prosty. Wykonaj powolne kroki w bok, utrzymując napięcie gumy przez cały czas. To świetny sposób na "wygaszenie" napięcia w pośladku średnim po serii odwodzeń.',
+         link:ytLink('Band Lateral Walk pośladek średni')}
+      ]
+    }
+  ]
+},
+D2: {
+  label: 'Góra (Pewny) — klatka, plecy, barki, biceps',
+  phases: [
+    {
+      name: 'Roller & Piłka', icon: '🔵',
+      items: [
+        {name:'Roller wzdłuż kręgosłupa piersiowego', equip:'roller', dur:'60-90 sek',
+         desc:'Leż na rollerze ustawionym wzdłuż kręgosłupa (roller pionowo, pod całymi plecami). Ramiona rozłożone w bok, dłonie skierowane ku górze. Grawitacja rozciąga klatkę piersiową i otwiera barki. Oddychaj głęboko — przy każdym wydechu pozwól ciału opaść niżej.',
+         link:ytLink('Roller wzdłuż kręgosłupa otwieranie klatki')},
+        {name:'Piłka pod tylną głową naramiennego', equip:'ball', dur:'40 sek/stronę',
+         desc:'Stań przy ścianie, piłkę umieść między ścianą a tylną częścią barku. Zataczaj małe kółka, szukając napiętego punktu, przytrzymaj nacisk 15-20 sek. Możesz delikatnie poruszać ramieniem w przód i w tył dla wzmocnienia efektu.',
+         link:ytLink('Piłka lacrosse tylny naramienny release')}
+      ]
+    },
+    {
+      name: 'Rozciąganie statyczne', icon: '🟢',
+      items: [
+        {name:'Doorway Chest Stretch — rozciąganie klatki w drzwiach', equip:'static', dur:'2×40 sek/stronę',
+         desc:'Stań w drzwiach, przedramię oprzyj o framugę pod kątem 90°, łokieć na wysokości barku. Zrób pół kroku do przodu i delikatnie obróć tułów od ściany. Zmieniaj wysokość łokcia, by rozciągnąć różne włókna klatki (wyżej = górna część, niżej = dolna).',
+         link:ytLink('Doorway Chest Stretch rozciąganie klatki w drzwiach')},
+        {name:'Overhead Triceps Stretch', equip:'static', dur:'2×30 sek/stronę',
+         desc:'Unieś jedną rękę nad głowę, zegnij łokieć tak, by dłoń opadła między łopatki. Drugą dłonią chwyć za łokieć i delikatnie pociągnij ku głowie. Rozciąga to trójgłowego ramienia zaraz po pracy barków.',
+         link:ytLink('Overhead Triceps Stretch nad głową')},
+        {name:"Child's Pose z wyciągnięciem w bok", equip:'static', dur:'2×30 sek/stronę',
+         desc:'Klęknij na macie, usiądź na piętach, pochyl się do przodu i wyciągnij obie ręce maksymalnie daleko w bok. Poczuj rozciąganie wzdłuż boku tułowia — najszerszy grzbietu i obły większy, mocno pracujące przy wiosłowaniu i ściąganiu wyciągu.',
+         link:ytLink("Child's Pose side reach latissimus stretch")}
+      ]
+    },
+    {
+      name: 'Gumy oporowe', icon: '🟣',
+      items: [
+        {name:'Band Pull-Apart — balans mięśniowy barku', equip:'band', dur:'2×15 pow.',
+         desc:'Stój prosto, chwyć gumę oburącz na szerokość barków, ramiona wyciągnięte przed siebie. Rozciągaj gumę na boki aż do dotknięcia klatki — łopatki cofają się i ściskają. Aktywuje tylną deltę i mięśnie międzyłopatkowe, przeciwwagę dla pracy klatki i barków przednich.',
+         link:ytLink('Band Pull-Apart balans barku')}
+      ]
+    }
+  ]
+},
+D3: {
+  label: 'Dół (Opcjonalny) — dwugłowe uda, pośladki, inny kąt',
+  phases: [
+    {
+      name: 'Roller & Piłka', icon: '🔵',
+      items: [
+        {name:'Roller na dwugłowym uda', equip:'roller', dur:'60 sek/nogę',
+         desc:'Usiądź na rollerze, jedna noga wyprostowana na rollerze, druga stopa na podłodze. Powoli rolluj od pośladka do dołu kolana. Po serii RDL i uginań tył uda jest tu szczególnie napięty.',
+         link:ytLink('Roller na hamstringi tył uda')},
+        {name:'Piłka pod pośladkiem (okolice piriformis)', equip:'ball', dur:'40 sek/stronę',
+         desc:'Usiądź na piłce, przenieś ciężar na jeden pośladek, drugą stopę oprzyj na kolanie. Delikatnie kołysz się w małym zakresie, szukając napiętego punktu. Skuteczne po Hip Thrust jednonóż i Donkey Kick.',
+         link:ytLink('Piłka pod pośladkiem release piriformis')}
+      ]
+    },
+    {
+      name: 'Rozciąganie statyczne', icon: '🟢',
+      items: [
+        {name:'Standing Quad Stretch', equip:'static', dur:'2×30 sek/stronę',
+         desc:'Stań prosto (trzymaj się czegoś dla równowagi), chwyć kostkę jednej nogi i przyciągnij piętę do pośladka. Kolana blisko siebie, biodro pchnij delikatnie do przodu. Rozciąga przód uda, pracujący pomocniczo przy wykrokach i RDL.',
+         link:ytLink('Standing Quad Stretch przód uda')},
+        {name:'Figure-4 Stretch siedząc — pośladek', equip:'static', dur:'2×30 sek/stronę',
+         desc:'Usiądź na krześle, kostkę jednej nogi połóż na kolanie drugiej. Pochyl tułów do przodu z prostymi plecami, aż poczujesz rozciąganie w pośladku. Wygodny wariant do zrobienia od razu po treningu, bez maty.',
+         link:ytLink('Figure 4 stretch siedząc pośladek')},
+        {name:'Calf Stretch przy ścianie', equip:'static', dur:'2×30 sek/stronę',
+         desc:'Stań przodem do ściany, jedna noga w tyle, wyprostowana w kolanie, pięta na podłodze. Pochyl się do ściany, aż poczujesz rozciąganie łydki. Warto zrobić po finiszerze cardio na stepperze/orbitreku.',
+         link:ytLink('Calf Stretch przy ścianie łydka')}
+      ]
+    },
+    {
+      name: 'Gumy oporowe', icon: '🟣',
+      items: [
+        {name:'Band Assisted Hamstring Stretch leżąc', equip:'band', dur:'2×30 sek/stronę',
+         desc:'Leż na plecach, zapętl gumę na stopie, drugą nogę połóż płasko na podłodze. Powoli przyciągaj prostą nogę ku sobie, aż poczujesz rozciąganie tyłu uda. Guma pozwala utrzymać pozycję bez napinania mięśni stabilizujących.',
+         link:ytLink('Band Assisted Hamstring Stretch leżąc')}
+      ]
+    }
+  ]
+},
+D4: {
+  label: 'Góra + Core (Opcjonalny) — klatka, plecy, barki, triceps, brzuch',
+  phases: [
+    {
+      name: 'Roller & Piłka', icon: '🔵',
+      items: [
+        {name:'Roller na górnym grzbiecie (między łopatkami)', equip:'roller', dur:'60 sek',
+         desc:'Leż na rollerze ustawionym poprzecznie pod górną częścią pleców, kolana ugięte, dłonie za głową. Unieś lekko biodra i powoli rolluj górny odcinek pleców. Rozluźnia napięcie po wiosłowaniu na wyciągu i deskach.',
+         link:ytLink('Roller górny grzbiet między łopatkami')},
+        {name:'Roller na tricepsie', equip:'roller', dur:'40 sek/stronę',
+         desc:'Leż na boku, roller pod pachą i tricepsem, ramię wyciągnięte przed siebie. Powoli rolluj od pachy do łokcia, zatrzymując się na napiętych miejscach. Przydatne zaraz po Triceps Pushdown.',
+         link:ytLink('Roller na tricepsie release')}
+      ]
+    },
+    {
+      name: 'Rozciąganie statyczne', icon: '🟢',
+      items: [
+        {name:'Doorway Chest Stretch — po Chest Press', equip:'static', dur:'2×40 sek/stronę',
+         desc:'Stań w drzwiach, przedramię na framudze pod kątem 90°, łokieć na wysokości barku. Zrób pół kroku do przodu, delikatnie obracając tułów od ściany. Po pracy na maszynie do wyciskania klatka jest tu szczególnie spięta.',
+         link:ytLink('Doorway Chest Stretch klatka w drzwiach')},
+        {name:'Cross-Body Shoulder Stretch', equip:'static', dur:'2×30 sek/stronę',
+         desc:'Wyciągnij jedno ramię poziomo przed siebie. Drugą ręką chwyć je w okolicy łokcia (nie nadgarstka) i przyciągnij horyzontalnie w stronę klatki. Bark pozostaje opuszczony — rozciąga tylną torebkę stawu barkowego.',
+         link:ytLink('Cross-Body Shoulder Stretch bark')},
+        {name:"Child's Pose — rozluźnienie po core", equip:'static', dur:'45-60 sek',
+         desc:'Klęknij na macie, usiądź na piętach, pochyl tułów do przodu z rękami wyciągniętymi przed sobą, czoło opuść na matę. Spokojny, głęboki oddech. Świetne wyciszenie kręgosłupa po Desce i Pallof Press.',
+         link:ytLink("Child's Pose rozluźnienie pleców")}
+      ]
+    },
+    {
+      name: 'Gumy oporowe', icon: '🟣',
+      items: [
+        {name:'Band Pull-Apart — domknięcie sesji górnej partii', equip:'band', dur:'2×15 pow.',
+         desc:'Chwyć gumę oburącz na szerokość barków, ramiona wyciągnięte przed siebie. Rozciągaj gumę na boki aż do dotknięcia klatki, ściągając łopatki. Dobre zamknięcie treningu — aktywuje plecy jako przeciwwagę dla pracy klatki i triceps.',
+         link:ytLink('Band Pull-Apart zamknięcie treningu górnej partii')}
+      ]
+    }
+  ]
+}
+};
+
+function swStretch(day, btn) {
+  curStretchDay = day;
+  document.querySelectorAll('#s-stretch .wb2').forEach(function(b) { b.classList.remove('on'); });
+  btn.classList.add('on');
+  renderStretch();
+}
+
+function renderStretch() {
+  var day = STRETCH[curStretchDay];
+  var container = document.getElementById('stretchBlocks');
+  if (!container || !day) return;
+
+  var html = '<div class="str-day"><div style="font-size:13px;color:var(--tx2);margin-bottom:1rem;padding:0 0.1rem">' + day.label + '</div>';
+
+  day.phases.forEach(function(phase) {
+    html += '<div class="str-phase"><span class="str-phase-icon">' + phase.icon + '</span>' + phase.name + '</div>';
+    phase.items.forEach(function(item) {
+      html += '<div class="str-card" onclick="toggleStrCard(this)">'
+        + '<div class="str-card-top">'
+        + '<div class="str-card-left">'
+        + '<div class="str-card-name">' + item.name + '</div>'
+        + '<div class="str-card-meta">⏱ ' + item.dur + '</div>'
+        + '</div>'
+        + '<span class="str-equip ' + item.equip + '">' + equipLabels[item.equip] + '</span>'
+        + '</div>'
+        + '<div class="str-card-desc">'
+        + '<p>' + item.desc + '</p>'
+        + '<a class="str-yt-btn" href="' + item.link + '" target="_blank" rel="noopener">▶ Szukaj na YouTube</a>'
+        + '</div></div>';
+    });
+  });
+
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+function toggleStrCard(card) {
+  var desc = card.querySelector('.str-card-desc');
+  desc.classList.toggle('open');
+}
+
 
 // ── SCHEMATY PROGRESJI (5 tygodni: T1-T4 progresja, T5 deload) ──
 // A: ciężkie ruchy typu hip-hinge (Hip Thrust, RDL)
@@ -431,25 +682,25 @@ bledy:[
 cwiczysz:['Pośladek wielki','Dwugłowy uda']},
 
 {id:'d1_2',day:'D1',type:'dol',isCore:false,
-name:'Wykroki w miejscu z hantlami (Stationary Lunges)',muscle:'Pośladek wielki, czworogłowy uda (umiarkowanie)',
-link:ytLink('Wykroki w miejscu z hantlami'),weeks:WB,
+name:'Wykroki chodzone z hantlami (Walking Lunges)',muscle:'Pośladek wielki, czworogłowy uda (umiarkowanie), stabilizacja jednonóż',
+link:ytLink('Walking Lunges wykroki chodzone'),weeks:WB,
 wskazowki:[
+  'Wariant chodzony to naturalny "krok w górę" względem wykroków w miejscu — dokłada element równowagi i koordynacji, mocniej angażując stabilizatory biodra.',
   'Krok wystarczająco długi, by w dolnej pozycji kolano przedniej nogi było nad kostką, nie wystawało daleko przed palce.',
-  'Tułów pionowy przez cały ruch — lekkie pochylenie do przodu przenosi więcej pracy na pośladek.',
-  'Wypychaj się głównie piętą przedniej stopy — to mocniej aktywuje pośladek niż palce.',
-  'Lekkie hantle — to ćwiczenie kontrolne, jakość ruchu jest ważniejsza niż ciężar.'
+  'Wypychaj się głównie piętą przedniej stopy, prostując się do pełnego stania przed kolejnym krokiem — to mocniej aktywuje pośladek niż palce.',
+  'Tułów pionowy przez cały ruch, wzrok skierowany przed siebie — pomaga to utrzymać równowagę przy przemieszczaniu się.'
 ],
 instrukcja:[
-  'Stań w rozkroku przód-tył, hantle po bokach ciała.',
-  'Wdech — ugnij oba kolana, opuszczając biodra prosto w dół.',
+  'Stań prosto, hantle po bokach ciała.',
+  'Zrób długi krok do przodu, wdech, opuszczając biodra prosto w dół.',
   'Tylne kolano lekko nad podłogą, przednie pod kątem ok. 90°.',
-  'Z wydechem wypchnij się piętą przedniej stopy do góry.',
-  'Wykonaj wszystkie powtórzenia jedną nogą, zmień stronę.'
+  'Z wydechem wypchnij się piętą przedniej stopy, prostując się do pozycji stojącej.',
+  'Zrób kolejny krok drugą nogą — kontynuuj naprzemiennie do końca serii.'
 ],
 bledy:[
   'Kolano przedniej nogi wychodzi mocno do wewnątrz (koślawienie) — kontroluj tor ruchu.',
   'Zbyt krótki krok — przeciąża kolano zamiast pośladka.',
-  'Odbijanie się w dolnej pozycji zamiast kontrolowanego ruchu.'
+  'Utrata równowagi przy zbyt szybkim tempie — zwolnij i skup się na kontroli.'
 ],
 cwiczysz:['Pośladek wielki','Czworogłowy uda']},
 
@@ -615,19 +866,19 @@ bledy:[
 cwiczysz:['Najszerszy grzbietu','Romboidalny','Tylny naramienny']},
 
 {id:'d2_3',day:'D2',type:'gora',isCore:false,
-name:'Ściąganie wyciągu górnego szerokim nachwytem (Wide Grip Lat Pulldown)',muscle:'Najszerszy grzbietu, obły większy, biceps (pomocniczo)',
-link:ytLink('Wide Grip Lat Pulldown'),weeks:WE,
+name:'Ściąganie wyciągu górnego wąskim, neutralnym uchwytem (Close Neutral-Grip Lat Pulldown)',muscle:'Najszerszy grzbietu (dolne włókna), obły większy, biceps (pomocniczo)',
+link:ytLink('Close Neutral Grip Lat Pulldown'),weeks:WE,
 wskazowki:[
-  'Chwyt szerszy niż barki, dłonie nachwytem — najlepszy wariant do budowania szerokości pleców.',
+  'Wąski, neutralny uchwyt (dłonie zwrócone do siebie) mocniej akcentuje dolną część najszerszego grzbietu niż szeroki nachwyt — dobra odmiana bodźca względem poprzedniego bloku.',
   'Zanim ugniesz łokcie, ściągnij łopatki w dół i do tyłu — to inicjuje prawidłowy wzorzec ruchu.',
-  'Ściągaj drążek do górnej części klatki, nie za głowę — bezpieczniejsze dla barków.',
+  'Ściągaj uchwyt do górnej części klatki, łokcie schodzą blisko tułowia — to naturalny tor przy wąskim chwycie.',
   'Lekkie odchylenie tułowia (10-15°) jest naturalne, ale nie zamieniaj tego w wiosłowanie.'
 ],
 instrukcja:[
-  'Usiądź, uda zablokuj pod podkładkami, chwyć drążek szerokim nachwytem.',
+  'Usiądź, uda zablokuj pod podkładkami, chwyć uchwyt wąski/neutralny (rączki równoległe).',
   'Wdech, ramiona w pełnym wyproście nad głową.',
-  'Z wydechem ściągnij łopatki w dół, następnie ugnij łokcie, prowadząc drążek do klatki.',
-  'Zatrzymaj 1 sek w dolnej pozycji.',
+  'Z wydechem ściągnij łopatki w dół, następnie ugnij łokcie, prowadząc uchwyt do klatki.',
+  'Zatrzymaj 1 sek w dolnej pozycji, łokcie blisko tułowia.',
   'Wdech — powoli wróć do pełnego wyprostu ramion.'
 ],
 bledy:[
@@ -1030,8 +1281,6 @@ bledy:[
 cwiczysz:['Mięśnie skośne brzucha','Poprzeczny brzucha']}
 ];
 
-let CPW=1;
-
 const PM_FIELDS=[
   {id:'waga',   label:'Waga',                        unit:'kg', icon:'⚖️'},
   {id:'talia',  label:'Talia',                        unit:'cm', icon:'📏'},
@@ -1046,12 +1295,12 @@ function sk(id,week,set){return id+'_w'+week+'_s'+set;}
 function pmKey(field,week){return 'pm_'+field+'_w'+week;}
 
 // ── DARK MODE ──
-let DARK=localStorage.getItem('krt6v2_dark')==='1';
+let DARK=localStorage.getItem('krt6v3_dark')==='1';
 function applyDark(){
   document.body.classList.toggle('dark',DARK);
   document.getElementById('dmBtn').textContent=DARK?'☀️':'🌙';
 }
-function toggleDark(){DARK=!DARK;localStorage.setItem('krt6v2_dark',DARK?'1':'0');applyDark();}
+function toggleDark(){DARK=!DARK;localStorage.setItem('krt6v3_dark',DARK?'1':'0');applyDark();}
 applyDark();
 
 // ── TIMER ──
@@ -1122,7 +1371,7 @@ function copyPrevWeek(exId,sNum,week){
   if(prev.kg) RES[k].kg=prev.kg;
   if(prev.reps) RES[k].reps=prev.reps;
   RES[k].date=new Date().toLocaleDateString('pl-PL');
-  localStorage.setItem('krt6v2',JSON.stringify(RES));
+  localStorage.setItem('krt6v3',JSON.stringify(RES));
   patchSetInputs(exId,sNum,week,RES[k]);
   showToast('📋 Skopiowano z T'+(week-1)+' → T'+week);
 }
@@ -1159,6 +1408,7 @@ function nav(id,btn){
   if(id==='progress') rProg();
   if(id==='dziennik') rPlan();
   if(id==='pomiary')  rPomiary();
+  if(id==='stretch')  renderStretch();
 }
 
 // ── ZNACZNIK "OPCJONALNY" ──
@@ -1199,47 +1449,6 @@ function closeMod(){
   document.body.style.width='';
 }
 document.addEventListener('keydown',e=>{if(e.key==='Escape') closeMod();});
-
-// ── PLAN READ-ONLY ──
-function swPlan(w,btn){
-  CPW=w;
-  document.querySelectorAll('#s-plan .wb2').forEach(b=>b.classList.remove('on'));
-  btn.classList.add('on');
-  rPlanReadOnly();
-}
-
-function rPlanReadOnly(){
-  const wi=CPW-1;
-  document.getElementById('planBlocks').innerHTML=DD.map(day=>{
-    const exs=EX.filter(e=>e.day===day.id);
-    const main=exs.filter(e=>!e.isCore&&e.type!=='cardio');
-    const ord=[...main,...exs.filter(e=>e.isCore),...exs.filter(e=>e.type==='cardio')];
-    const tot=main.reduce((s,e)=>s+(parseInt(e.weeks[wi].s)||0),0);
-    const rows=ord.map((e,idx)=>{
-      const wk=e.weeks[wi];
-      const cls=e.isCore?'rc':e.type==='cardio'?'rd':'';
-      return '<tr class="'+cls+'"><td style="width:22px;text-align:center;font-size:11px;color:var(--tx3)">'+(idx+1)+'</td>'
-        +'<td><div class="el" onclick="openMod(\''+e.id+'\')">'+e.name+' <span class="eli">↗</span></div></td>'
-        +'<td style="font-weight:600;white-space:nowrap">'+wk.s+'×'+wk.r+'</td>'
-        +'<td class="mbh-plan" style="font-size:11px;color:var(--tx3);white-space:nowrap">'+wk.rest+'</td></tr>';
-    }).join('');
-    return '<div class="db" id="pb-'+day.id+'">'
-      +'<div class="dbh" onclick="togP(\''+day.id+'\')">'
-      +'<div class="di '+day.ic+'">'+day.icon+'</div>'
-      +'<div style="flex:1"><div class="dt">'+day.label+optBadge(day)+'</div>'
-      +'<div class="dm">'+main.length+' ćwiczeń · '+tot+' serii · T'+CPW+'</div></div>'
-      +'<span class="dc">›</span></div>'
-      +'<div class="dbd"><div class="pt"><table class="plan">'
-      +'<thead><tr><th>#</th><th>Ćwiczenie</th><th>S×P</th><th class="mbh-plan">Przerwa</th></tr></thead>'
-      +'<tbody>'+rows+'</tbody></table></div></div></div>';
-  }).join('');
-}
-
-function togP(id){
-  const b=document.getElementById('pb-'+id);
-  b.classList.toggle('open');
-  b.querySelector('.dc').style.transform=b.classList.contains('open')?'rotate(90deg)':'';
-}
 
 // ── DZIENNIK (PER-SET LOGGING) ──
 function sw(w,btn){
@@ -1334,7 +1543,7 @@ function saveKg(id,week,setNum,inp){
   if(!RES[k]) RES[k]={kg:'',reps:'',date:''};
   RES[k].kg=val;
   RES[k].date=new Date().toLocaleDateString('pl-PL');
-  localStorage.setItem('krt6v2',JSON.stringify(RES));
+  localStorage.setItem('krt6v3',JSON.stringify(RES));
   showToast('💾 S'+setNum+' · T'+week);
 }
 
@@ -1344,7 +1553,7 @@ function saveS(id,week,setNum,field,inp){
   RES[k][field]=inp.value;
   RES[k].date=new Date().toLocaleDateString('pl-PL');
   inp.classList.toggle('f',!!inp.value);
-  localStorage.setItem('krt6v2',JSON.stringify(RES));
+  localStorage.setItem('krt6v3',JSON.stringify(RES));
   showToast('💾 S'+setNum+' · T'+week);
 }
 
@@ -1357,7 +1566,7 @@ function savePm(field,week,inp){
     delete RES[k];
   }
   inp.classList.toggle('f',!!val);
-  localStorage.setItem('krt6v2',JSON.stringify(RES));
+  localStorage.setItem('krt6v3',JSON.stringify(RES));
   showToast('💾 Pomiar T'+week);
 }
 
@@ -1511,7 +1720,7 @@ function updStats(){
 function clrAll(){
   if(!confirm('Wyczyścić wszystkie wyniki?')) return;
   Object.keys(RES).forEach(function(k){delete RES[k];});
-  localStorage.removeItem('krt6v2');
+  localStorage.removeItem('krt6v3');
   rProg();rPlan();showToast('🗑 Wyczyszczono');
 }
 
@@ -1534,7 +1743,7 @@ function expCSV(){
 }
 
 function expJSON(){
-  const payload={krt6v2:RES,exportedAt:new Date().toISOString(),version:'krt6v2'};
+  const payload={krt6v3:RES,exportedAt:new Date().toISOString(),version:'krt6v3'};
   const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
   const a=document.createElement('a');
   a.href=URL.createObjectURL(blob);
@@ -1556,12 +1765,12 @@ function loadJSONFile(ev){
   reader.onload=function(e){
     try{
       const obj=JSON.parse(e.target.result);
-      const data=obj.krt6v2||obj.krt6||obj;
+      const data=obj.krt6v3||obj.krt6||obj;
       if(typeof data!=='object'||Array.isArray(data)) throw new Error('Nieprawidłowy format');
       if(!confirm('Wczytać dane z pliku? Zastąpią obecne wyniki.')) return;
       Object.keys(RES).forEach(function(k){delete RES[k];});
       Object.keys(data).forEach(function(k){RES[k]=data[k];});
-      localStorage.setItem('krt6v2',JSON.stringify(RES));
+      localStorage.setItem('krt6v3',JSON.stringify(RES));
       rProg();rPlan();
       showToast('✅ Dane wczytane pomyślnie');
     }catch(err){
@@ -1622,7 +1831,7 @@ function togPm(id){
 }
 
 // ── INIT ──
-rPlanReadOnly();
+renderStretch();
 rPlan();
 updStats();
 
